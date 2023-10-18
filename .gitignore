@@ -1,3 +1,9 @@
+build/
+
+.pixi/
+.cache/
+pixi.lock
+
 # Prerequisites
 *.d
 

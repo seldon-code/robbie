@@ -1,0 +1,20 @@
+# $ micromamba create -f environment.yml
+# $ micromamba activate robbieenv
+#
+
+name: robbieenv
+channels:
+  - conda-forge
+# requirements:
+#   build:
+#     - {{ compiler('c') }}
+#     - {{ compiler('c++') }}
+dependencies:
+  - eigen
+  - meson
+  - fmt
+  - pkg-config
+  - cmake
+  - ninja 
+  - clang-format
+  - catch2 
