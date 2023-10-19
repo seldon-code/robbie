@@ -56,7 +56,7 @@ public:
             for( size_t j = 0; j < n_samples; j++ )
             {
                 // forward propagation
-                const auto & output = x_train[j];
+                auto output = x_train[j];
                 for( auto & layer : layers )
                 {
                     output = layer->forward_propagation( output );
@@ -67,10 +67,10 @@ public:
 
                 // backward propagation
                 auto error = Loss::df( y_train[j], output );
-                for( size_t i_layer = layers.size() - 1; i_layer >= 0; --i_layer )
+                for( int i_layer = layers.size() - 1; i_layer >= 0; --i_layer )
                 {
-                    auto layer = layers[i_layer];
-                    error      = layer->backward_propagation( error, learning_rate );
+                    auto & layer = layers[i_layer];
+                    error        = layer->backward_propagation( error, learning_rate );
                 }
             }
             err /= n_samples;
