@@ -13,6 +13,8 @@ namespace Robbie
 {
 void do_stuff()
 {
+    srand( 1 );
+
     std::vector<Vector<double>> x_train( 4, Vector<double>( 2 ) );
     x_train[0] << 0, 0;
     x_train[1] << 0, 1;
