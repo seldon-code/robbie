@@ -25,7 +25,7 @@ public:
 
     Vector<scalar> predict( const Vector<scalar> & input_data )
     {
-        auto output = input_data;
+        Vector<scalar> output = input_data;
         for( auto & layer : layers )
         {
             output = layer->forward_propagation( output );
@@ -35,11 +35,11 @@ public:
 
     std::vector<Vector<scalar>> predict( const std::vector<Vector<scalar>> & input_data_list )
     {
-        std::vector<Vector<scalar>> result{};
+        std::vector<Vector<scalar>> result( 0 );
 
-        for( auto & input_data : input_data_list )
+        for( int i_input = 0; i_input < input_data_list.size(); i_input++ )
         {
-            result.push_back( predict( input_data ) );
+            result.push_back( predict( input_data_list[i_input] ) );
         }
         return result;
     }
