@@ -1,6 +1,7 @@
 #pragma once
 #include "defines.hpp"
 #include "layer.hpp"
+#include <fmt/format.h>
 #include <cstddef>
 #include <memory>
 #include <type_traits>
@@ -32,6 +33,17 @@ public:
         return output;
     }
 
+    std::vector<Vector<scalar>> predict( const std::vector<Vector<scalar>> & input_data_list )
+    {
+        std::vector<Vector<scalar>> result{};
+
+        for( auto & input_data : input_data_list )
+        {
+            result.push_back( predict( input_data ) );
+        }
+        return result;
+    }
+
     void
     fit( const std::vector<Vector<double>> & x_train, const std::vector<Vector<double>> & y_train, size_t epochs,
          scalar learning_rate )
@@ -55,13 +67,14 @@ public:
 
                 // backward propagation
                 auto error = Loss::df( y_train[j], output );
-
                 for( size_t i_layer = layers.size() - 1; i_layer >= 0; --i_layer )
                 {
                     auto layer = layers[i_layer];
-                    output     = layer->forward_propagation( output );
+                    error      = layer->backward_propagation( error, learning_rate );
                 }
             }
+            err /= n_samples;
+            fmt::print( "Epoch {}/{}   error = {}\n", i + 1, epochs, err );
         }
     }
 
