@@ -24,6 +24,9 @@ public:
               weights( Matrix<scalar>::Random( input_size, output_size ) ),
               bias( Vector<scalar>::Random( output_size ) )
     {
+        scalar offset = 0.5;
+        weights       = weights.array() - offset;
+        bias          = bias.array() - offset;
     }
 
     // returns output for a given input
@@ -37,8 +40,8 @@ public:
     // computes dE/dW, dE/dB for a given output_error=dE/dY. Returns input_error=dE/dX.
     Vector<scalar> backward_propagation( Vector<scalar> & output_error, scalar learning_rate ) override
     {
-        auto input_error   = output_error * weights.transpose();
-        auto weigths_error = this->input.transpose() * output_error;
+        auto input_error   = ( output_error.transpose() * weights ).transpose();
+        auto weigths_error = this->input * output_error.transpose();
 
         // update parameters
         weights -= learning_rate * weigths_error;
