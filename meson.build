@@ -8,6 +8,9 @@ incdir = include_directories('include')
 
 tests = [
   ['Test1', 'test/test1.cpp'],
+  ['Test_ActivationFunctions', 'test/test_activation_functions.cpp'],
+  ['Test_LossFunctions', 'test/test_loss_functions.cpp'],
+
 ]
 
 Catch2 = dependency('Catch2', method : 'cmake', modules : ['Catch2::Catch2WithMain', 'Catch2::Catch2'])
@@ -15,7 +18,7 @@ Catch2 = dependency('Catch2', method : 'cmake', modules : ['Catch2::Catch2WithMa
 foreach t : tests
   exe = executable(t.get(0), t.get(1),
     dependencies : [dependency('fmt'), Catch2],
-    include_directories : incdir
+    include_directories : [incdir, 'test']
   )
   test(t.get(0), exe)
 endforeach
