@@ -33,14 +33,14 @@ public:
     Vector<scalar> forward_propagation( Vector<scalar> & input_data ) override
     {
         this->input  = input_data;
-        this->output = input_data.transpose() * weights;
+        this->output = ( input_data.transpose() * weights + bias.transpose() ).transpose();
         return this->output;
     }
 
     // computes dE/dW, dE/dB for a given output_error=dE/dY. Returns input_error=dE/dX.
     Vector<scalar> backward_propagation( Vector<scalar> & output_error, scalar learning_rate ) override
     {
-        auto input_error   = ( output_error.transpose() * weights ).transpose();
+        auto input_error   = weights * output_error;
         auto weigths_error = this->input * output_error.transpose();
 
         // update parameters
@@ -48,6 +48,12 @@ public:
         bias -= learning_rate * output_error;
 
         return input_error;
+    }
+
+    // Access the current weights
+    Matrix<scalar> get_weights()
+    {
+        return this->weights;
     }
 };
 } // namespace Robbie

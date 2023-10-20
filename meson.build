@@ -10,7 +10,7 @@ tests = [
   ['Test1', 'test/test1.cpp'],
   ['Test_ActivationFunctions', 'test/test_activation_functions.cpp'],
   ['Test_LossFunctions', 'test/test_loss_functions.cpp'],
-
+  ['Test_FullyConnectedLayer', 'test/test_fc_layer.cpp']
 ]
 
 Catch2 = dependency('Catch2', method : 'cmake', modules : ['Catch2::Catch2WithMain', 'Catch2::Catch2'])
