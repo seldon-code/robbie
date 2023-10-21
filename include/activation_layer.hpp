@@ -20,7 +20,7 @@ public:
     // computes dE/dX for a given dE/dY (and update parameters if any)
     Vector<scalar> backward_propagation( Vector<scalar> & output_error, scalar learning_rate ) override
     {
-        return Activation::df( this->input ).transpose() * output_error;
+        return Activation::df( this->input ).array() * output_error.array();
     }
 };
 } // namespace Robbie
