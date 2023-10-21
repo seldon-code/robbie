@@ -13,7 +13,7 @@ inline Vector<scalar> finite_diff( Func f, const Vector<scalar> & X, scalar epsi
     Vector<scalar> result( X.size() );
     Vector<scalar> diff = Robbie::Vector<scalar>::Zero( X.size() );
 
-    for( size_t dim = 0; dim < X.size(); dim++ )
+    for( int dim = 0; dim < X.size(); dim++ )
     {
         diff.setZero();
         diff[dim]   = epsilon;
@@ -32,7 +32,7 @@ inline Vector<scalar> finite_difference_gradient( Func f, const Vector<scalar> &
     Vector<scalar> result( X.size() );
     Vector<scalar> diff = Robbie::Vector<scalar>::Zero( X.size() );
 
-    for( size_t dim = 0; dim < X.size(); dim++ )
+    for( int dim = 0; dim < X.size(); dim++ )
     {
         diff.setZero();
         diff[dim]   = epsilon;

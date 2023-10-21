@@ -18,7 +18,8 @@ public:
     };
 
     // computes dE/dX for a given dE/dY (and update parameters if any)
-    Vector<scalar> backward_propagation( const Vector<scalar> & output_error, scalar learning_rate ) override
+    Vector<scalar>
+    backward_propagation( const Vector<scalar> & output_error, scalar learning_rate [[maybe_unused]] ) override
     {
         return Activation::df( this->input ).array() * output_error.array();
     }

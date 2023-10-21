@@ -11,7 +11,7 @@
 
 namespace Robbie
 {
-void do_stuff()
+inline void do_stuff()
 {
     srand( 1 );
 

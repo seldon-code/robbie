@@ -37,7 +37,7 @@ public:
     {
         std::vector<Vector<scalar>> result( 0 );
 
-        for( int i_input = 0; i_input < input_data_list.size(); i_input++ )
+        for( size_t i_input = 0; i_input < input_data_list.size(); i_input++ )
         {
             result.push_back( predict( input_data_list[i_input] ) );
         }
