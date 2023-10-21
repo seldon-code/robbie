@@ -17,10 +17,10 @@ public:
     Layer() = default;
 
     // computes the output Y of a layer for a given input
-    virtual Vector<scalar> forward_propagation( Vector<scalar> & input ) = 0;
+    virtual Vector<scalar> forward_propagation( const Vector<scalar> & input ) = 0;
 
     // computes dE/dX for a given dE/dY (and update parameters if any)
-    virtual Vector<scalar> backward_propagation( Vector<scalar> & output_error, scalar learning_rate ) = 0;
+    virtual Vector<scalar> backward_propagation( const Vector<scalar> & output_error, scalar learning_rate ) = 0;
 };
 
 } // namespace Robbie

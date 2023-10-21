@@ -8,12 +8,12 @@ template<typename scalar>
 class Tanh
 {
 public:
-    static Vector<scalar> f( Vector<scalar> x )
+    static Vector<scalar> f( const Vector<scalar> & x )
     {
         return x.array().tanh();
     }
 
-    static Vector<scalar> df( Vector<scalar> x )
+    static Vector<scalar> df( const Vector<scalar> & x )
     {
         return -x.array().tanh().pow( 2 ) + 1.0;
     }

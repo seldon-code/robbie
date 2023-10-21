@@ -10,7 +10,7 @@ class ActivationLayer : public Layer<scalar>
 public:
     ActivationLayer() = default;
 
-    Vector<scalar> forward_propagation( Vector<scalar> & input ) override
+    Vector<scalar> forward_propagation( const Vector<scalar> & input ) override
     {
         this->input  = input;
         this->output = Activation::f( input );
@@ -18,7 +18,7 @@ public:
     };
 
     // computes dE/dX for a given dE/dY (and update parameters if any)
-    Vector<scalar> backward_propagation( Vector<scalar> & output_error, scalar learning_rate ) override
+    Vector<scalar> backward_propagation( const Vector<scalar> & output_error, scalar learning_rate ) override
     {
         return Activation::df( this->input ).array() * output_error.array();
     }
