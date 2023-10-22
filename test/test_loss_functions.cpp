@@ -15,8 +15,9 @@ TEST_CASE( "Test_LossFunctions" )
     auto y_pred = Robbie::Vector<double>( 5 );
     y_pred << -3.1, 1.2, 2.3, 3.1, -1;
 
-    auto f_bound = [&]( const Robbie::Vector<double> & y_pred )
-    { return Robbie::LossFunctions::MeanSquareError<double>::f( y_true, y_pred ); };
+    auto f_bound = [&]( const Robbie::Vector<double> & y_pred ) {
+        return Robbie::LossFunctions::MeanSquareError<double>::f( y_true, y_pred );
+    };
 
     auto df_finite_diff = Robbie::finite_difference_gradient( f_bound, y_pred );
     auto df             = Robbie::LossFunctions::MeanSquareError<double>::df( y_true, y_pred );

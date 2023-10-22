@@ -14,7 +14,6 @@ exe = executable('robbie', 'main.cpp',
 
 
 tests = [
-  ['Test1', 'test/test1.cpp'],
   ['Test_ActivationFunctions', 'test/test_activation_functions.cpp'],
   ['Test_LossFunctions', 'test/test_loss_functions.cpp'],
   ['Test_FullyConnectedLayer', 'test/test_fc_layer.cpp']
