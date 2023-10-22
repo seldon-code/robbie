@@ -78,8 +78,24 @@ public:
         }
     }
 
+    void summary()
+    {
+        n_trainable_params = 0;
+
+        for( auto & layer : layers )
+        {
+            n_trainable_params += layer->get_trainable_params();
+        }
+
+        // Print the number of trainable parameters
+        fmt::print( "=================================================================\n" );
+        fmt::print( "Trainable params = {}\n", n_trainable_params );
+        fmt::print( "=================================================================\n" );
+    }
+
 private:
     std::vector<std::unique_ptr<Layer<scalar>>> layers;
+    int n_trainable_params;
 };
 
 } // namespace Robbie

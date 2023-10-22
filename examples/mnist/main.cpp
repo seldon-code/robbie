@@ -56,6 +56,9 @@ int main()
     network.add( Robbie::ActivationLayer<scalar, Robbie::ActivationFunctions::Tanh<scalar>>() );
     network.add( Robbie::FCLayer<scalar>( 50, 10 ) );
 
+    // No. of trainable params
+    network.summary();
+
     network.fit( x_train, y_train, 35, 0.1 );
 
     // Test on three samples

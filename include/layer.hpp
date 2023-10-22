@@ -22,6 +22,9 @@ public:
     // computes dE/dX for a given dE/dY (and update parameters if any)
     virtual Vector<scalar> backward_propagation( const Vector<scalar> & output_error, scalar learning_rate ) = 0;
 
+    // Get trainable parameters
+    virtual int get_trainable_params() = 0;
+
     virtual ~Layer() = default;
 };
 

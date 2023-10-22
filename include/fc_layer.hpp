@@ -24,9 +24,8 @@ public:
               weights( Matrix<scalar>::Random( input_size, output_size ) ),
               bias( Vector<scalar>::Random( output_size ) )
     {
-        scalar offset = 0.5;
-        weights       = weights.array() / 2.0;
-        bias          = bias.array() / 2.0;
+        weights = weights.array() / 2.0;
+        bias    = bias.array() / 2.0;
     }
 
     // returns output for a given input
@@ -48,6 +47,12 @@ public:
         bias -= learning_rate * output_error;
 
         return input_error;
+    }
+
+    // Return the number of trainable parameters
+    int get_trainable_params() override
+    {
+        return this->weights.size() + this->bias.size();
     }
 
     // Access the current weights

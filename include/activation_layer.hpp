@@ -23,5 +23,11 @@ public:
     {
         return Activation::df( this->input ).array() * output_error.array();
     }
+
+    // Return the number of trainable parameters
+    int get_trainable_params() override
+    {
+        return 0;
+    }
 };
 } // namespace Robbie
