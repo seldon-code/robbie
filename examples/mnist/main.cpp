@@ -1,7 +1,7 @@
-#include "fmt/core.h"
 #include "mnist_loader.h"
 #include "robbie.hpp"
 #include <fmt/format.h>
+#include <fmt/ranges.h>
 #include <iostream>
 
 int main()

@@ -1,8 +1,7 @@
-#include "defines.hpp"
-#include "layer.hpp"
-#include "loss_functions.hpp"
 #include "robbie.hpp"
 #include "util.hpp"
+#include <fmt/format.h>
+#include <fmt/ranges.h>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
 #include <cstddef>
