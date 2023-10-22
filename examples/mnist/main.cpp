@@ -8,7 +8,7 @@ int main()
 {
     mnist_loader train(
         "./examples/mnist/mnist_data/train-images-idx3-ubyte", "./examples/mnist/mnist_data/train-labels-idx1-ubyte",
-        10000 );
+        1000 );
     mnist_loader test(
         "./examples/mnist/mnist_data/t10k-images-idx3-ubyte", "./examples/mnist/mnist_data/t10k-labels-idx1-ubyte",
         1000 );
