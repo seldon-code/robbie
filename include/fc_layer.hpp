@@ -25,8 +25,8 @@ public:
               bias( Vector<scalar>::Random( output_size ) )
     {
         scalar offset = 0.5;
-        weights       = weights.array() - offset;
-        bias          = bias.array() - offset;
+        weights       = weights.array() / 2.0;
+        bias          = bias.array() / 2.0;
     }
 
     // returns output for a given input
