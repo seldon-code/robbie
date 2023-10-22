@@ -45,7 +45,7 @@ public:
     }
 
     void
-    fit( const std::vector<Vector<double>> & x_train, const std::vector<Vector<double>> & y_train, size_t epochs,
+    fit( const std::vector<Vector<scalar>> & x_train, const std::vector<Vector<scalar>> & y_train, size_t epochs,
          scalar learning_rate )
     {
         auto n_samples = x_train.size();
