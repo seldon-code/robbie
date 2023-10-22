@@ -11,16 +11,18 @@ int main()
         1000 );
     mnist_loader test(
         "./examples/mnist/mnist_data/t10k-images-idx3-ubyte", "./examples/mnist/mnist_data/t10k-labels-idx1-ubyte",
-        1000 );
+        100 );
 
     int rows                  = train.rows();
     int cols                  = train.cols();
     int label                 = train.labels( 0 );
     std::vector<double> image = train.images( 0 );
 
+    using scalar = double;
+
     // Build the training data
-    std::vector<Robbie::Vector<double>> x_train( train.size(), Robbie::Vector<double>::Zero( 28 * 28 ) );
-    std::vector<Robbie::Vector<double>> y_train( train.size(), Robbie::Vector<double>::Zero( 10 ) );
+    std::vector<Robbie::Vector<scalar>> x_train( train.size(), Robbie::Vector<scalar>::Zero( 28 * 28 ) );
+    std::vector<Robbie::Vector<scalar>> y_train( train.size(), Robbie::Vector<scalar>::Zero( 10 ) );
     // Transform training data
     for( int idx = 0; idx < train.size(); idx++ )
     {
@@ -34,8 +36,8 @@ int main()
     }
 
     // Build the test data
-    std::vector<Robbie::Vector<double>> x_test( train.size(), Robbie::Vector<double>::Zero( 28 * 28 ) );
-    std::vector<Robbie::Vector<double>> y_test( train.size(), Robbie::Vector<double>::Zero( 10 ) );
+    std::vector<Robbie::Vector<scalar>> x_test( train.size(), Robbie::Vector<scalar>::Zero( 28 * 28 ) );
+    std::vector<Robbie::Vector<scalar>> y_test( train.size(), Robbie::Vector<scalar>::Zero( 10 ) );
     for( int idx = 0; idx < test.size(); idx++ )
     {
         auto img   = test.images( idx );
@@ -47,13 +49,14 @@ int main()
         y_test[idx][int( label )] = 1.0;
     }
 
-    auto network = Robbie::Network<double, Robbie::LossFunctions::MeanSquareError<double>>();
-    network.add( Robbie::FCLayer<double>( 28 * 28, 100 ) );
-    network.add( Robbie::ActivationLayer<double, Robbie::ActivationFunctions::Tanh<double>>() );
-    network.add( Robbie::FCLayer<double>( 100, 50 ) );
-    network.add( Robbie::ActivationLayer<double, Robbie::ActivationFunctions::Tanh<double>>() );
-    network.add( Robbie::FCLayer<double>( 50, 10 ) );
-    network.fit( x_train, y_train, 30, 0.1 );
+    auto network = Robbie::Network<scalar, Robbie::LossFunctions::MeanSquareError<scalar>>();
+    network.add( Robbie::FCLayer<scalar>( 28 * 28, 100 ) );
+    network.add( Robbie::ActivationLayer<scalar, Robbie::ActivationFunctions::Tanh<scalar>>() );
+    network.add( Robbie::FCLayer<scalar>( 100, 50 ) );
+    network.add( Robbie::ActivationLayer<scalar, Robbie::ActivationFunctions::Tanh<scalar>>() );
+    network.add( Robbie::FCLayer<scalar>( 50, 10 ) );
+
+    network.fit( x_train, y_train, 35, 0.1 );
 
     // Test on three samples
     for( int i = 0; i < 3; i++ )
