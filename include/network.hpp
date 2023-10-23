@@ -46,13 +46,14 @@ public:
 
     void
     fit( const std::vector<Vector<scalar>> & x_train, const std::vector<Vector<scalar>> & y_train, size_t epochs,
-         scalar learning_rate )
+         scalar learning_rate, bool print_progress = false )
     {
         auto n_samples = x_train.size();
 
+        scalar err = 0;
         for( size_t i = 0; i < epochs; i++ )
         {
-            scalar err = 0;
+            err = 0;
             for( size_t j = 0; j < n_samples; j++ )
             {
                 // forward propagation
@@ -74,8 +75,14 @@ public:
                 }
             }
             err /= n_samples;
-            fmt::print( "Epoch {}/{}   error = {}\n", i + 1, epochs, err );
+            if( print_progress )
+            {
+                fmt::print( "Epoch {}/{}   error = {}\n", i + 1, epochs, err );
+            }
         }
+
+        fmt::print( "------------------------\n" );
+        fmt::print( "Epoch {}/{}   error = {}\n", epochs, epochs, err );
     }
 
     void summary()
