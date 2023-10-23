@@ -17,6 +17,7 @@ tests = [
   ['Test_LossFunctions', 'test/test_loss_functions.cpp'],
   ['Test_FullyConnectedLayer', 'test/test_fc_layer.cpp'],
   ['Test_XOR', 'test/test_xor.cpp'],
+  ['Test_BackwardPropagations', 'test/test_backward_propagations.cpp'],
 ]
 
 Catch2 = dependency('Catch2', method : 'cmake', modules : ['Catch2::Catch2WithMain', 'Catch2::Catch2'])
