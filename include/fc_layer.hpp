@@ -40,10 +40,10 @@ public:
     Vector<scalar> backward_propagation( const Vector<scalar> & output_error, scalar learning_rate ) override
     {
         auto input_error   = weights * output_error;
-        auto weigths_error = this->input * output_error.transpose();
+        auto weights_error = this->input * output_error.transpose();
 
         // update parameters
-        weights -= learning_rate * weigths_error;
+        weights -= learning_rate * weights_error;
         bias -= learning_rate * output_error;
 
         return input_error;
