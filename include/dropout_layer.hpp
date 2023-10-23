@@ -14,14 +14,14 @@ template<typename scalar>
 class DropoutLayer : public Layer<scalar>
 {
 protected:
-    scalar dropout_probability = 0.0;
+    scalar p_keep = 0.0;
     Vector<scalar> dropout_mask;
     std::mt19937 gen;
     std::uniform_real_distribution<scalar> dist = std::uniform_real_distribution<scalar>( 0.0, 1.0 );
     std::optional<size_t> frozen_seed           = std::nullopt;
 
 public:
-    DropoutLayer( scalar dropout_probability ) : Layer<scalar>(), dropout_probability( dropout_probability )
+    DropoutLayer( scalar p_keep ) : Layer<scalar>(), p_keep( p_keep )
     {
         int seed = std::random_device()();
         gen      = std::mt19937( seed );
@@ -44,7 +44,7 @@ public:
 
         dropout_mask.resize( input_data.size(), 1 );
 
-        const auto dropout_lambda = [&]( scalar x ) { return dist( gen ) < this->dropout_probability ? 0.0 : 1.0; };
+        const auto dropout_lambda = [&]( scalar x ) { return dist( gen ) > this->p_keep ? 0.0 : 1.0/p_keep; };
 
         dropout_mask = dropout_mask.array().unaryExpr( dropout_lambda );
 
