@@ -31,7 +31,7 @@ TEST_CASE( "Test_XOR" )
 
     // fmt::print(" out = {}\n", out[0]);
 
-    for( int i = 0; i < y_train.size(); i++ )
+    for( decltype( y_train )::size_type i = 0; i < y_train.size(); i++ )
     {
         REQUIRE_THAT( out[i][0], Catch::Matchers::WithinAbs( y_train[i][0], 5e-2 ) );
     }
