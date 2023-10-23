@@ -5,6 +5,7 @@
 #include "layer.hpp"
 #include <eigen3/Eigen/src/Core/Matrix.h>
 #include <cstddef>
+#include <optional>
 #include <random>
 
 namespace Robbie
@@ -17,6 +18,7 @@ protected:
     Vector<scalar> dropout_mask;
     std::mt19937 gen;
     std::uniform_real_distribution<scalar> dist = std::uniform_real_distribution<scalar>( 0.0, 1.0 );
+    std::optional<size_t> frozen_seed           = std::nullopt;
 
 public:
     DropoutLayer( scalar dropout_probability ) : Layer<scalar>(), dropout_probability( dropout_probability )
@@ -25,14 +27,22 @@ public:
         gen      = std::mt19937( seed );
     }
 
+    // Makes each forward pass return the same result, use only for testing
+    void set_frozen_seed( std::optional<size_t> seed )
+    {
+        frozen_seed = seed;
+    }
+
     // returns output for a given input
     Vector<scalar> forward_propagation( const Vector<scalar> & input_data ) override
     {
-        if( dropout_mask.size() != input_data.size() )
+        if( frozen_seed.has_value() )
             [[unlikely]]
             {
-                dropout_mask.resize( input_data.size(), 1 );
+                gen.seed( frozen_seed.value() );
             }
+
+        dropout_mask.resize( input_data.size(), 1 );
 
         const auto dropout_lambda = [&]( scalar x ) { return dist( gen ) < this->dropout_probability ? 0.0 : 1.0; };
 
@@ -54,6 +64,5 @@ public:
     {
         return 0;
     }
-
 };
 } // namespace Robbie
