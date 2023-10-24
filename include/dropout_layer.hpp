@@ -27,6 +27,11 @@ public:
         gen      = std::mt19937( seed );
     }
 
+    std::string name() override
+    {
+        return "Dropout";
+    }
+
     // Makes each forward pass return the same result, use only for testing
     void set_frozen_seed( std::optional<size_t> seed )
     {
@@ -44,9 +49,15 @@ public:
 
         dropout_mask.resize( input_data.rows(), 1 );
         const auto dropout_lambda = [&]( scalar x ) { return dist( gen ) > this->p_keep ? 0.0 : 1.0 / p_keep; };
-        dropout_mask = dropout_mask.array().unaryExpr( dropout_lambda );
+        dropout_mask              = dropout_mask.array().unaryExpr( dropout_lambda );
 
         this->output = input_data.array().colwise() * dropout_mask.array();
+        return this->output;
+    }
+
+    // For predictions, no dropout is applied
+    Matrix<scalar> predict( const Matrix<scalar> & input_data ) override
+    {
         return this->output;
     }
 

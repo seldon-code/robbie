@@ -10,22 +10,22 @@ template<typename scalar>
 class FCLayer : public Layer<scalar>
 {
 protected:
-    size_t input_size  = 0;
-    size_t output_size = 0;
-
     Matrix<scalar> weights;
     Vector<scalar> bias;
 
 public:
     FCLayer( size_t input_size, size_t output_size )
-            : Layer<scalar>(),
-              input_size( input_size ),
-              output_size( output_size ),
+            : Layer<scalar>( input_size, output_size ),
               weights( Matrix<scalar>::Random( output_size, input_size ) ),
               bias( Vector<scalar>::Random( output_size, 1 ) )
     {
         weights = weights.array() / 2.0;
         bias    = bias.array() / 2.0;
+    }
+
+    std::string name() override
+    {
+        return "Fully Connected";
     }
 
     // returns output for a given input

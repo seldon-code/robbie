@@ -28,7 +28,7 @@ public:
         Matrix<scalar> output = input_data;
         for( auto & layer : layers )
         {
-            output = layer->forward_propagation( output );
+            output = layer->predict( output );
         }
         return output;
     }
@@ -96,8 +96,25 @@ public:
 
         // Print the number of trainable parameters
         fmt::print( "=================================================================\n" );
+        fmt::print( "Number of layers = {}\n", layers.size() );
         fmt::print( "Trainable params = {}\n", n_trainable_params );
-        fmt::print( "=================================================================\n" );
+        fmt::print( "-----------------------------------------------------------------\n" );
+        fmt::print( "{:<20} {:>20} {:>20}\n", "Type", "input_size", "output_size" );
+        fmt::print( "-----------------------------------------------------------------\n" );
+        for( auto & l : layers )
+        {
+            int output_size = -1;
+            if( l->get_output_size().has_value() )
+                output_size = l->get_output_size().value_or( -1 );
+
+            int input_size = -1;
+            if( l->get_input_size().has_value() )
+                input_size = l->get_input_size().value_or( -1 );
+
+            fmt::print( "{:<20} {:>20} {:>20}\n", l->name(), input_size, output_size );
+        }
+
+        fmt::print( "=================================================================\n\n" );
     }
 
 private:
