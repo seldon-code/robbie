@@ -44,11 +44,11 @@ int main()
     fmt::print( "x_train[10] = {}\n", fmt::streamed( x_train[10] ) );
     fmt::print( "y_train[10] = {}\n", fmt::streamed( y_train[10] ) );
 
-    auto network = Network<double, LossFunctions::MeanSquareError<double>>();
+    auto network = Network<double, LossFunctions::MeanSquareError>();
     network.add( FCLayer<double>( input_size, 100 ) );
-    network.add( ActivationLayer<double, ActivationFunctions::ReLU<double>>() );
+    network.add( ActivationLayer<double, ActivationFunctions::ReLU>() );
     network.add( FCLayer<double>( 100, 10 ) );
     network.summary();
 
-    network.fit( x_train, y_train, 25, 0.001 / 2.0, true );
+    network.fit( x_train, y_train, 100, 0.001 / 2.0, true );
 }
