@@ -4,18 +4,20 @@
 namespace Robbie::LossFunctions
 {
 
-template<typename scalar>
+// template<typename scalar>
 class MeanSquareError
 {
 public:
-    static scalar f( const Matrix<scalar> & y_true, const Matrix<scalar> & y_pred )
+    template<typename Derived, typename Derived2>
+    static auto f( const Eigen::MatrixBase<Derived> & y_true, const Eigen::MatrixBase<Derived2> & y_pred )
     {
-        return ( y_true - y_pred ).array().pow( 2 ).mean();
+        return ( y_true - y_pred ).array().pow( 2 ).colwise().mean();
     }
 
-    static Matrix<scalar> df( const Matrix<scalar> & y_true, const Matrix<scalar> & y_pred )
+    template<typename Derived, typename Derived2>
+    static auto df( const Eigen::MatrixBase<Derived> & y_true, const Eigen::MatrixBase<Derived2> & y_pred )
     {
-        return 2.0 * ( y_pred - y_true ) / y_true.size();
+        return 2.0 * ( y_pred - y_true ) / y_true.rows();
     }
 };
 

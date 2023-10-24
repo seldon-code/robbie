@@ -64,10 +64,10 @@ public:
                 }
 
                 // compute loss (for display purpose only)
-                err += Loss::f( y_train[j], output );
+                err += Loss::f( y_train[j], output ).mean();
 
                 // backward propagation
-                auto error = Loss::df( y_train[j], output );
+                auto error = Loss::df( y_train[j], output ).eval();
                 for( int i_layer = layers.size() - 1; i_layer >= 0; --i_layer )
                 {
                     auto & layer = layers[i_layer];
