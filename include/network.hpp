@@ -1,7 +1,9 @@
 #pragma once
 #include "defines.hpp"
 #include "layer.hpp"
+#include <fmt/chrono.h>
 #include <fmt/format.h>
+#include <chrono>
 #include <cstddef>
 #include <memory>
 #include <type_traits>
@@ -46,14 +48,15 @@ public:
 
     void
     fit( const std::vector<Matrix<scalar>> & x_train, const std::vector<Matrix<scalar>> & y_train, size_t epochs,
-         scalar learning_rate, bool print_progress = false )
+         scalar learning_rate, bool print_progress = false, size_t batchsize = 1 )
     {
         auto n_samples = x_train.size();
 
         scalar err = 0;
         for( size_t i = 0; i < epochs; i++ )
         {
-            err = 0;
+            auto t_epoch_start = std::chrono::high_resolution_clock::now();
+            err                = 0;
             for( size_t j = 0; j < n_samples; j++ )
             {
                 // forward propagation
@@ -74,10 +77,15 @@ public:
                     error        = layer->backward_propagation( error, learning_rate );
                 }
             }
+
+            auto t_epoch_end = std::chrono::high_resolution_clock::now();
+            auto epoch_time  = std::chrono::duration_cast<std::chrono::seconds>( t_epoch_end - t_epoch_start );
+
             err /= n_samples;
             if( print_progress )
             {
-                fmt::print( "Epoch {}/{}   error = {}\n", i + 1, epochs, err );
+                fmt::print(
+                    "Epoch {}/{}   error = {:<10.3e}  epoch_time = {:%Hh %Mm %Ss}\n", i + 1, epochs, err, epoch_time );
             }
         }
 
