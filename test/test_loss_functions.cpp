@@ -1,5 +1,4 @@
 #include "robbie.hpp"
-#include "util.hpp"
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <catch2/catch_test_macros.hpp>

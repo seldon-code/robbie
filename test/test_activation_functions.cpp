@@ -1,7 +1,6 @@
 #include "activation_functions.hpp"
 #include "defines.hpp"
 #include "robbie.hpp"
-#include "util.hpp"
 #include <fmt/ostream.h>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>

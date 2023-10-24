@@ -1,7 +1,6 @@
 #include "defines.hpp"
 #include "fc_layer.hpp"
 #include "robbie.hpp"
-#include "util.hpp"
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
 
