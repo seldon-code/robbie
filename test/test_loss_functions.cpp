@@ -39,4 +39,5 @@ void test_func()
 TEST_CASE( "Test_LossFunctions" )
 {
     test_func<Robbie::LossFunctions::MeanSquareError>();
+    test_func<Robbie::LossFunctions::SumSquareError>();
 }
