@@ -32,6 +32,9 @@ TEST_CASE( "Test_XOR" )
     auto out = network.predict( x_train );
 
     fmt::print( " out = {}\n", fmt::streamed( out[0] ) );
+    fmt::print( " out = {}\n", fmt::streamed( out[1] ) );
+    fmt::print( " out = {}\n", fmt::streamed( out[2] ) );
+    fmt::print( " out = {}\n", fmt::streamed( out[3] ) );
 
     for( decltype( y_train )::size_type i = 0; i < y_train.size(); i++ )
     {
