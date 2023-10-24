@@ -4,6 +4,7 @@
 #include "layer.hpp"
 #include <eigen3/Eigen/src/Core/Matrix.h>
 #include <cstddef>
+#include <random>
 namespace Robbie
 {
 template<typename scalar>
@@ -16,11 +17,17 @@ protected:
 public:
     FCLayer( size_t input_size, size_t output_size )
             : Layer<scalar>( input_size, output_size ),
-              weights( Matrix<scalar>::Random( output_size, input_size ) ),
-              bias( Vector<scalar>::Random( output_size, 1 ) )
+              weights( Matrix<scalar>( output_size, input_size ) ),
+              bias( Vector<scalar>( output_size ) )
     {
-        weights = weights.array() / 2.0;
-        bias    = bias.array() / 2.0;
+        auto rd   = std::random_device();
+        auto gen  = std::mt19937( 0 );
+        auto dist = std::uniform_real_distribution( -0.1, 0.1 );
+
+        const auto random_lambda = [&]( scalar x ) { return dist( gen ); };
+
+        weights = weights.array().unaryExpr( random_lambda );
+        bias    = bias.array().unaryExpr( random_lambda );
     }
 
     std::string name() override
