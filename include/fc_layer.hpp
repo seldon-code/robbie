@@ -14,7 +14,7 @@ protected:
     size_t output_size = 0;
 
     Matrix<scalar> weights;
-    Vector<scalar> bias;
+    Matrix<scalar> bias;
 
 public:
     FCLayer( size_t input_size, size_t output_size )
@@ -22,14 +22,14 @@ public:
               input_size( input_size ),
               output_size( output_size ),
               weights( Matrix<scalar>::Random( input_size, output_size ) ),
-              bias( Vector<scalar>::Random( output_size ) )
+              bias( Vector<scalar>::Random( output_size, 1 ) )
     {
         weights = weights.array() / 2.0;
         bias    = bias.array() / 2.0;
     }
 
     // returns output for a given input
-    Vector<scalar> forward_propagation( const Vector<scalar> & input_data ) override
+    Matrix<scalar> forward_propagation( const Matrix<scalar> & input_data ) override
     {
         this->input  = input_data;
         this->output = ( input_data.transpose() * weights + bias.transpose() ).transpose();
@@ -37,7 +37,7 @@ public:
     }
 
     // computes dE/dW, dE/dB for a given output_error=dE/dY. Returns input_error=dE/dX.
-    Vector<scalar> backward_propagation( const Vector<scalar> & output_error, scalar learning_rate ) override
+    Matrix<scalar> backward_propagation( const Matrix<scalar> & output_error, scalar learning_rate ) override
     {
         auto input_error   = weights * output_error;
         auto weights_error = this->input * output_error.transpose();

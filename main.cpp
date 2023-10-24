@@ -4,15 +4,15 @@
 #include <random>
 
 template<typename scalar>
-Robbie::Vector<scalar> function( const Robbie::Vector<scalar> & x )
+Robbie::Matrix<scalar> function( const Robbie::Matrix<scalar> & x )
 {
     return x.array().pow( 2 );
 }
 
 template<typename scalar>
 void generate_training_data(
-    int n_samples, int input_size, std::vector<Robbie::Vector<scalar>> & x_train,
-    std::vector<Robbie::Vector<scalar>> & y_train )
+    int n_samples, int input_size, std::vector<Robbie::Matrix<scalar>> & x_train,
+    std::vector<Robbie::Matrix<scalar>> & y_train )
 {
     std::mt19937 gen                            = std::mt19937( 0 );
     std::uniform_real_distribution<scalar> dist = std::uniform_real_distribution<scalar>( -10.0, 10.0 );
@@ -20,7 +20,7 @@ void generate_training_data(
     for( int i = 0; i < n_samples; i++ )
     {
         const auto random_lambda     = [&]( scalar x ) { return dist( gen ); };
-        Robbie::Vector<scalar> x_cur = Robbie::Vector<scalar>::Zero( input_size ).array().unaryExpr( random_lambda );
+        Robbie::Matrix<scalar> x_cur = Robbie::Matrix<scalar>::Zero( input_size, 1 ).array().unaryExpr( random_lambda );
         x_train.push_back( x_cur );
         y_train.push_back( function( x_cur ) );
     }
@@ -29,10 +29,10 @@ void generate_training_data(
 int main()
 {
     using namespace Robbie;
-    std::vector<Vector<double>> x_train( 0 );
-    std::vector<Vector<double>> y_train( 0 );
-    std::vector<Vector<double>> x_test( 0 );
-    std::vector<Vector<double>> y_test( 0 );
+    std::vector<Matrix<double>> x_train( 0 );
+    std::vector<Matrix<double>> y_train( 0 );
+    std::vector<Matrix<double>> x_test( 0 );
+    std::vector<Matrix<double>> y_test( 0 );
 
     int n_train    = 20;
     int n_test     = n_train * 0.2;

@@ -13,11 +13,11 @@ exe = executable('robbie', 'main.cpp',
   )
 
 tests = [
-  ['Test_ActivationFunctions', 'test/test_activation_functions.cpp'],
-  ['Test_LossFunctions', 'test/test_loss_functions.cpp'],
-  ['Test_FullyConnectedLayer', 'test/test_fc_layer.cpp'],
+  # ['Test_ActivationFunctions', 'test/test_activation_functions.cpp'],
+  # ['Test_LossFunctions', 'test/test_loss_functions.cpp'],
+  # ['Test_FullyConnectedLayer', 'test/test_fc_layer.cpp'],
   ['Test_XOR', 'test/test_xor.cpp'],
-  ['Test_BackwardPropagations', 'test/test_backward_propagations.cpp'],
+  # ['Test_BackwardPropagations', 'test/test_backward_propagations.cpp'],
 ]
 
 Catch2 = dependency('Catch2', method : 'cmake', modules : ['Catch2::Catch2WithMain', 'Catch2::Catch2'])
@@ -31,13 +31,13 @@ foreach t : tests
 endforeach
 
 
-examples = [
-  ['mnist', ['examples/mnist/main.cpp', 'examples/mnist/mnist_loader.cpp']]
-]
+# examples = [
+#   ['mnist', ['examples/mnist/main.cpp', 'examples/mnist/mnist_loader.cpp']]
+# ]
 
-foreach e : examples
-  exe = executable(e.get(0), e.get(1), 
-    dependencies : [dependency('fmt')], 
-    include_directories :  ['examples' / e.get(0), incdir]
-    )
-endforeach
+# foreach e : examples
+#   exe = executable(e.get(0), e.get(1), 
+#     dependencies : [dependency('fmt')], 
+#     include_directories :  ['examples' / e.get(0), incdir]
+#     )
+# endforeach

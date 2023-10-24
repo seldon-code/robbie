@@ -10,17 +10,17 @@ template<typename scalar>
 class Layer
 {
 protected:
-    Vector<scalar> input;
-    Vector<scalar> output;
+    Matrix<scalar> input;
+    Matrix<scalar> output;
 
 public:
     Layer() = default;
 
     // computes the output Y of a layer for a given input
-    virtual Vector<scalar> forward_propagation( const Vector<scalar> & input ) = 0;
+    virtual Matrix<scalar> forward_propagation( const Matrix<scalar> & input ) = 0;
 
     // computes dE/dX for a given dE/dY (and update parameters if any)
-    virtual Vector<scalar> backward_propagation( const Vector<scalar> & output_error, scalar learning_rate ) = 0;
+    virtual Matrix<scalar> backward_propagation( const Matrix<scalar> & output_error, scalar learning_rate ) = 0;
 
     // Get trainable parameters
     virtual int get_trainable_params() = 0;

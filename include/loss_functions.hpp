@@ -8,12 +8,12 @@ template<typename scalar>
 class MeanSquareError
 {
 public:
-    static scalar f( const Vector<scalar> & y_true, const Vector<scalar> & y_pred )
+    static scalar f( const Matrix<scalar> & y_true, const Matrix<scalar> & y_pred )
     {
         return ( y_true - y_pred ).array().pow( 2 ).mean();
     }
 
-    static Vector<scalar> df( const Vector<scalar> & y_true, const Vector<scalar> & y_pred )
+    static Matrix<scalar> df( const Matrix<scalar> & y_true, const Matrix<scalar> & y_pred )
     {
         return 2.0 * ( y_pred - y_true ) / y_true.size();
     }

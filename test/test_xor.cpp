@@ -1,4 +1,6 @@
 #include "robbie.hpp"
+#include <fmt/format.h>
+#include <fmt/ostream.h>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
 #include <cstddef>
@@ -7,13 +9,13 @@
 TEST_CASE( "Test_XOR" )
 {
     using namespace Robbie;
-    std::vector<Vector<double>> x_train( 4, Vector<double>( 2 ) );
+    std::vector<Matrix<double>> x_train( 4, Matrix<double>( 2, 1 ) );
     x_train[0] << 0, 0;
     x_train[1] << 0, 1;
     x_train[2] << 1, 0;
     x_train[3] << 1, 1;
 
-    std::vector<Vector<double>> y_train( 4, Vector<double>( 1 ) );
+    std::vector<Matrix<double>> y_train( 4, Matrix<double>( 1, 1 ) );
     y_train[0] << 0;
     y_train[1] << 1;
     y_train[2] << 1;
@@ -29,10 +31,10 @@ TEST_CASE( "Test_XOR" )
 
     auto out = network.predict( x_train );
 
-    // fmt::print(" out = {}\n", out[0]);
+    fmt::print( " out = {}\n", fmt::streamed( out[0] ) );
 
     for( decltype( y_train )::size_type i = 0; i < y_train.size(); i++ )
     {
-        REQUIRE_THAT( out[i][0], Catch::Matchers::WithinAbs( y_train[i][0], 5e-2 ) );
+        REQUIRE_THAT( out[i]( 0, 0 ), Catch::Matchers::WithinAbs( y_train[i]( 0, 0 ), 5e-2 ) );
     }
 }

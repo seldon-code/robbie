@@ -11,7 +11,7 @@ template<typename scalar, typename Func>
 inline Vector<scalar> finite_diff( Func f, const Vector<scalar> & X, scalar epsilon = 1e-8 )
 {
     Vector<scalar> result( X.size() );
-    Vector<scalar> diff = Robbie::Vector<scalar>::Zero( X.size() );
+    Vector<scalar> diff = Robbie::Matrix<scalar>::Zero( X.size() );
 
     for( int dim = 0; dim < X.size(); dim++ )
     {
@@ -27,10 +27,10 @@ inline Vector<scalar> finite_diff( Func f, const Vector<scalar> & X, scalar epsi
 Compute the gradient of a multivariate scalar function with central finite differences
 */
 template<typename scalar, typename Func>
-inline Vector<scalar> finite_difference_gradient( Func f, const Vector<scalar> & X, scalar epsilon = 1e-8 )
+inline Matrix<scalar> finite_difference_gradient( Func f, const Matrix<scalar> & X, scalar epsilon = 1e-8 )
 {
-    Vector<scalar> result( X.size() );
-    Vector<scalar> diff = Robbie::Vector<scalar>::Zero( X.size() );
+    Matrix<scalar> result( X.size() );
+    Matrix<scalar> diff = Robbie::Matrix<scalar>::Zero( X.size() );
 
     for( int dim = 0; dim < X.size(); dim++ )
     {

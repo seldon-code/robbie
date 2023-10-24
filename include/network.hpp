@@ -23,9 +23,9 @@ public:
         layers.push_back( std::make_unique<LayerT>( layer ) );
     }
 
-    Vector<scalar> predict( const Vector<scalar> & input_data )
+    Matrix<scalar> predict( const Matrix<scalar> & input_data )
     {
-        Vector<scalar> output = input_data;
+        Matrix<scalar> output = input_data;
         for( auto & layer : layers )
         {
             output = layer->forward_propagation( output );
@@ -33,9 +33,9 @@ public:
         return output;
     }
 
-    std::vector<Vector<scalar>> predict( const std::vector<Vector<scalar>> & input_data_list )
+    std::vector<Matrix<scalar>> predict( const std::vector<Matrix<scalar>> & input_data_list )
     {
-        std::vector<Vector<scalar>> result( 0 );
+        std::vector<Matrix<scalar>> result( 0 );
 
         for( size_t i_input = 0; i_input < input_data_list.size(); i_input++ )
         {
@@ -45,7 +45,7 @@ public:
     }
 
     void
-    fit( const std::vector<Vector<scalar>> & x_train, const std::vector<Vector<scalar>> & y_train, size_t epochs,
+    fit( const std::vector<Matrix<scalar>> & x_train, const std::vector<Matrix<scalar>> & y_train, size_t epochs,
          scalar learning_rate, bool print_progress = false )
     {
         auto n_samples = x_train.size();
