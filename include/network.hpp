@@ -3,6 +3,7 @@
 #include "layer.hpp"
 #include <fmt/chrono.h>
 #include <fmt/format.h>
+#include <fmt/ostream.h>
 #include <chrono>
 #include <cstddef>
 #include <memory>
@@ -27,7 +28,7 @@ public:
 
     Matrix<scalar> predict( const Matrix<scalar> & input_data )
     {
-        Matrix<scalar> output = input_data;
+        auto output = input_data;
         for( auto & layer : layers )
         {
             output = layer->predict( output );
@@ -72,7 +73,6 @@ public:
                 {
                     output = layer->forward_propagation( output );
                 }
-
                 // compute loss (for display purpose only)
                 err += Loss::f( y_train[j], output ).mean();
 
