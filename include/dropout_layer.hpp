@@ -15,7 +15,7 @@ class DropoutLayer : public Layer<scalar>
 {
 protected:
     scalar p_keep = 0.0;
-    Matrix<scalar> dropout_mask;
+    Vector<scalar> dropout_mask;
     std::mt19937 gen;
     std::uniform_real_distribution<scalar> dist = std::uniform_real_distribution<scalar>( 0.0, 1.0 );
     std::optional<size_t> frozen_seed           = std::nullopt;
@@ -42,20 +42,18 @@ public:
                 gen.seed( frozen_seed.value() );
             }
 
-        dropout_mask.resize( input_data.size(), 1 );
-
+        dropout_mask.resize( input_data.rows(), 1 );
         const auto dropout_lambda = [&]( scalar x ) { return dist( gen ) > this->p_keep ? 0.0 : 1.0 / p_keep; };
-
         dropout_mask = dropout_mask.array().unaryExpr( dropout_lambda );
 
-        this->output = dropout_mask.array() * input_data.array();
+        this->output = input_data.array().colwise() * dropout_mask.array();
         return this->output;
     }
 
     // computes dE/dW, dE/dB for a given output_error=dE/dY. Returns input_error=dE/dX.
     Matrix<scalar> backward_propagation( const Matrix<scalar> & output_error, scalar learning_rate ) override
     {
-        auto input_error = dropout_mask.array() * output_error.array();
+        auto input_error = output_error.array().colwise() * dropout_mask.array();
         return input_error;
     }
 
