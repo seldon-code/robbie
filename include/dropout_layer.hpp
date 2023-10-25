@@ -48,8 +48,9 @@ public:
             }
 
         dropout_mask.resize( input_data.rows(), 1 );
-        const auto dropout_lambda = [&]( scalar x ) { return dist( gen ) > this->p_keep ? 0.0 : 1.0 / p_keep; };
-        dropout_mask              = dropout_mask.array().unaryExpr( dropout_lambda );
+        const auto dropout_lambda
+            = [&]( scalar x ) { return static_cast<scalar>( dist( gen ) > this->p_keep ? 0.0 : 1.0 / p_keep ); };
+        dropout_mask = dropout_mask.array().unaryExpr( dropout_lambda );
 
         this->output = input_data.array().colwise() * dropout_mask.array();
         return this->output;
