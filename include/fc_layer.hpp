@@ -4,47 +4,54 @@
 #include "layer.hpp"
 #include <eigen3/Eigen/src/Core/Matrix.h>
 #include <cstddef>
+#include <random>
 namespace Robbie
 {
 template<typename scalar>
 class FCLayer : public Layer<scalar>
 {
 protected:
-    size_t input_size  = 0;
-    size_t output_size = 0;
-
     Matrix<scalar> weights;
     Vector<scalar> bias;
 
 public:
     FCLayer( size_t input_size, size_t output_size )
-            : Layer<scalar>(),
-              input_size( input_size ),
-              output_size( output_size ),
-              weights( Matrix<scalar>::Random( input_size, output_size ) ),
-              bias( Vector<scalar>::Random( output_size ) )
+            : Layer<scalar>( input_size, output_size ),
+              weights( Matrix<scalar>( output_size, input_size ) ),
+              bias( Vector<scalar>( output_size ) )
     {
-        weights = weights.array() / 2.0;
-        bias    = bias.array() / 2.0;
+        auto rd   = std::random_device();
+        auto gen  = std::mt19937( rd() );
+        auto dist = std::uniform_real_distribution<scalar>( -0.1, 0.1 );
+
+        const auto random_lambda = [&]( scalar x ) { return dist( gen ); };
+
+        weights = weights.array().unaryExpr( random_lambda );
+        bias    = bias.array().unaryExpr( random_lambda );
+    }
+
+    std::string name() override
+    {
+        return "Fully Connected";
     }
 
     // returns output for a given input
-    Vector<scalar> forward_propagation( const Vector<scalar> & input_data ) override
+    Matrix<scalar> forward_propagation( const Matrix<scalar> & input_data ) override
     {
         this->input  = input_data;
-        this->output = ( input_data.transpose() * weights + bias.transpose() ).transpose();
+        this->output = ( weights * input_data ).colwise() + bias;
         return this->output;
     }
 
     // computes dE/dW, dE/dB for a given output_error=dE/dY. Returns input_error=dE/dX.
-    Vector<scalar> backward_propagation( const Vector<scalar> & output_error, scalar learning_rate ) override
+    Matrix<scalar> backward_propagation( const Matrix<scalar> & output_error, scalar learning_rate ) override
     {
-        auto input_error   = weights * output_error;
-        auto weights_error = this->input * output_error.transpose();
+        auto input_error   = weights.transpose() * output_error;
+        auto weights_error = output_error * this->input.transpose();
 
-        // update parameters
-        weights -= learning_rate * weights_error;
-        bias -= learning_rate * output_error;
+        // update parameters by average gradient
+        weights -= learning_rate * ( weights_error ) / output_error.cols();
+        bias -= learning_rate * ( output_error ).rowwise().mean();
 
         return input_error;
     }

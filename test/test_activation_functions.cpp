@@ -1,7 +1,7 @@
 #include "activation_functions.hpp"
 #include "defines.hpp"
 #include "robbie.hpp"
-#include "util.hpp"
+#include <fmt/ostream.h>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
 #include <cstddef>
@@ -9,22 +9,29 @@
 template<typename F>
 void test_func()
 {
-    auto X = Robbie::Vector<double>( 6 );
+    auto X = Robbie::Matrix<double>( 3, 2 );
     X << -3, -0.1, 0.1, 2, 3, 4;
 
     auto f  = F::f( X );
     auto df = F::df( X );
 
-    auto df_finite_diff = Robbie::finite_diff( F::f, X );
-    for( int i = 0; i < X.size(); i++ )
-    {
-        fmt::print( "f[{}] = {}, df[{}] = {}, fd = {}\n", X[i], f[i], X[i], df[i], df_finite_diff[i] );
-        REQUIRE_THAT( df[i], Catch::Matchers::WithinAbs( df_finite_diff[i], 1e-6 ) );
-    }
+    fmt::print( "X = {}\n", fmt::streamed( X ) );
+    fmt::print( "f = {}\n", fmt::streamed( f ) );
+    fmt::print( "df = {}\n", fmt::streamed( df ) );
+
+    // Get the derivative per component with finite differences
+    double epsilon = 1e-6;
+    auto delta     = epsilon * Robbie::Matrix<double>::Ones( 3, 2 );
+    auto f_new     = F::f( X + delta );
+    fmt::print( "f_new = {}\n", fmt::streamed( f_new ) );
+    auto fd = ( f_new - f ) / epsilon;
+    fmt::print( "fd = {}\n", fmt::streamed( fd ) );
+
+    REQUIRE( ( fd - df ).maxCoeff() < 1e-6 );
 }
 
 TEST_CASE( "Test_ActivationFunctions" )
 {
-    test_func<Robbie::ActivationFunctions::Tanh<double>>();
-    test_func<Robbie::ActivationFunctions::ReLU<double>>();
+    test_func<Robbie::ActivationFunctions::Tanh>();
+    test_func<Robbie::ActivationFunctions::ReLU>();
 }

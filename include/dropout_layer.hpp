@@ -27,6 +27,11 @@ public:
         gen      = std::mt19937( seed );
     }
 
+    std::string name() override
+    {
+        return fmt::format( "Dropout (p={:.1f})", p_keep );
+    }
+
     // Makes each forward pass return the same result, use only for testing
     void set_frozen_seed( std::optional<size_t> seed )
     {
@@ -34,7 +39,7 @@ public:
     }
 
     // returns output for a given input
-    Vector<scalar> forward_propagation( const Vector<scalar> & input_data ) override
+    Matrix<scalar> forward_propagation( const Matrix<scalar> & input_data ) override
     {
         if( frozen_seed.has_value() )
             [[unlikely]]
@@ -42,20 +47,25 @@ public:
                 gen.seed( frozen_seed.value() );
             }
 
-        dropout_mask.resize( input_data.size(), 1 );
-
-        const auto dropout_lambda = [&]( scalar x ) { return dist( gen ) > this->p_keep ? 0.0 : 1.0/p_keep; };
-
+        dropout_mask.resize( input_data.rows(), 1 );
+        const auto dropout_lambda
+            = [&]( scalar x ) { return static_cast<scalar>( dist( gen ) > this->p_keep ? 0.0 : 1.0 / p_keep ); };
         dropout_mask = dropout_mask.array().unaryExpr( dropout_lambda );
 
-        this->output = dropout_mask.array() * input_data.array();
+        this->output = input_data.array().colwise() * dropout_mask.array();
+        return this->output;
+    }
+
+    // For predictions, no dropout is applied
+    Matrix<scalar> predict( const Matrix<scalar> & input_data ) override
+    {
         return this->output;
     }
 
     // computes dE/dW, dE/dB for a given output_error=dE/dY. Returns input_error=dE/dX.
-    Vector<scalar> backward_propagation( const Vector<scalar> & output_error, scalar learning_rate ) override
+    Matrix<scalar> backward_propagation( const Matrix<scalar> & output_error, scalar learning_rate ) override
     {
-        auto input_error = dropout_mask.array() * output_error.array();
+        auto input_error = output_error.array().colwise() * dropout_mask.array();
         return input_error;
     }
 

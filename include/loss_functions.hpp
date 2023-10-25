@@ -4,18 +4,36 @@
 namespace Robbie::LossFunctions
 {
 
-template<typename scalar>
+// template<typename scalar>
 class MeanSquareError
 {
 public:
-    static scalar f( const Vector<scalar> & y_true, const Vector<scalar> & y_pred )
+    template<typename Derived, typename Derived2>
+    static auto f( const Eigen::MatrixBase<Derived> & y_true, const Eigen::MatrixBase<Derived2> & y_pred )
     {
-        return ( y_true - y_pred ).array().pow( 2 ).mean();
+        return ( y_true - y_pred ).array().pow( 2 ).colwise().mean();
     }
 
-    static Vector<scalar> df( const Vector<scalar> & y_true, const Vector<scalar> & y_pred )
+    template<typename Derived, typename Derived2>
+    static auto df( const Eigen::MatrixBase<Derived> & y_true, const Eigen::MatrixBase<Derived2> & y_pred )
     {
-        return 2.0 * ( y_pred - y_true ) / y_true.size();
+        return 2.0 * ( y_pred - y_true ) / y_true.rows();
+    }
+};
+
+class SumSquareError
+{
+public:
+    template<typename Derived, typename Derived2>
+    static auto f( const Eigen::MatrixBase<Derived> & y_true, const Eigen::MatrixBase<Derived2> & y_pred )
+    {
+        return ( y_true - y_pred ).array().pow( 2 ).colwise().sum();
+    }
+
+    template<typename Derived, typename Derived2>
+    static auto df( const Eigen::MatrixBase<Derived> & y_true, const Eigen::MatrixBase<Derived2> & y_pred )
+    {
+        return 2.0 * ( y_pred - y_true );
     }
 };
 

@@ -4,34 +4,40 @@
 namespace Robbie::ActivationFunctions
 {
 
-template<typename scalar>
 class Tanh
 {
 public:
-    static Vector<scalar> f( const Vector<scalar> & x )
+    template<typename Derived>
+    static auto f( const Eigen::MatrixBase<Derived> & x )
     {
         return x.array().tanh();
     }
 
-    static Vector<scalar> df( const Vector<scalar> & x )
+    template<typename Derived>
+    static auto df( const Eigen::MatrixBase<Derived> & x )
     {
         return -x.array().tanh().pow( 2 ) + 1.0;
     }
 };
 
-template<typename scalar>
 class ReLU
 {
 public:
-    static Vector<scalar> f( const Vector<scalar> & x )
+    template<typename Derived>
+    static auto f( const Eigen::MatrixBase<Derived> & x )
     {
-        auto greater_than_zero = []( scalar x ) { return std::max( x, 0.0 ); };
+        // The static_cast is necessary to make different scalar types than double compile
+        using scalar           = typename Derived::Scalar;
+        auto greater_than_zero = []( scalar x ) { return std::max<scalar>( x, static_cast<scalar>( 0.0 ) ); };
         return x.array().unaryExpr( greater_than_zero );
     }
 
-    static Vector<scalar> df( const Vector<scalar> & x )
+    template<typename Derived>
+    static auto df( const Eigen::MatrixBase<Derived> & x )
     {
-        auto one_if_greater_than_zero = []( scalar x ) { return x >= 0.0 ? 1.0 : 0.0; };
+        // The static_cast is necessary to make different scalar types than double compile
+        using scalar                  = typename Derived::Scalar;
+        auto one_if_greater_than_zero = []( scalar x ) { return static_cast<scalar>( x >= 0.0 ? 1.0 : 0.0 ); };
         return x.array().unaryExpr( one_if_greater_than_zero );
     }
 };
