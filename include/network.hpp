@@ -47,6 +47,19 @@ public:
         return result;
     }
 
+    scalar loss( const std::vector<Matrix<scalar>> & x_test, const std::vector<Matrix<scalar>> & y_true )
+    {
+        scalar loss = 0.0;
+        Matrix<scalar> y_pred;
+        for( size_t i_input = 0; i_input < x_test.size(); i_input++ )
+        {
+            y_pred = predict( x_test[i_input] );
+            loss += Loss::f( y_true[i_input], y_pred ).mean();
+        }
+        loss /= x_test.size();
+        return loss;
+    }
+
     void
     fit( const std::vector<Matrix<scalar>> & x_train, const std::vector<Matrix<scalar>> & y_train, size_t epochs,
          scalar learning_rate, bool print_progress = false, size_t batchsize = 1 )

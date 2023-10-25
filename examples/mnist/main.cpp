@@ -38,16 +38,9 @@ void transform_mnist_data(
 
 int main()
 {
-    int n_train = 1000;
-    int n_test  = 1000;
+    int n_train = 10000;
+    int n_test  = 2000;
     int n_batch = 1;
-
-    // mnist_loader train(
-    //     "./examples/mnist/mnist_data/train-images-idx3-ubyte", "./examples/mnist/mnist_data/train-labels-idx1-ubyte",
-    //     n_train );
-    // mnist_loader test(
-    //     "./examples/mnist/mnist_data/t10k-images-idx3-ubyte", "./examples/mnist/mnist_data/t10k-labels-idx1-ubyte",
-    //     n_test );
 
     using scalar = double;
     auto dataset = mnist::read_dataset<scalar, scalar>();
@@ -63,7 +56,7 @@ int main()
     std::vector<Robbie::Matrix<scalar>> y_test;
     transform_mnist_data<scalar>( n_test, dataset.test_images, dataset.test_labels, x_test, y_test, 1 );
 
-    auto network = Robbie::Network<scalar, Robbie::LossFunctions::SumSquareError>();
+    auto network = Robbie::Network<scalar, Robbie::LossFunctions::MeanSquareError>();
     network.add( Robbie::FCLayer<scalar>( 28 * 28, 100 ) );
     network.add( Robbie::ActivationLayer<scalar, Robbie::ActivationFunctions::ReLU>() );
     // network.add( Robbie::DropoutLayer<scalar>( 0.5 ) );
@@ -74,19 +67,7 @@ int main()
 
     network.fit( x_train, y_train, 20, 0.002, true );
 
-    // Test on three samples
-    for( int i = 0; i < 3; i++ )
-    {
-        auto out = network.predict( x_test[i] );
-        // fmt::print( "Predicted value :\n {}\n", fmt::streamed( out ) );
-        // fmt::print( "true_value :\n {}\n", fmt::streamed( y_test[i] ) );
-        fmt::print( "label : {}\n", dataset.test_labels[i] );
-
-        int max_index  = 0;
-        int max_index2 = 0;
-        out.maxCoeff( &max_index, &max_index2 );
-        fmt::print( "predicted_label : {}\n----\n", max_index );
-    }
+    fmt::print( "Loss on test set = {:.3e}\n", network.loss( x_test, y_test ) );
 
     // Compute accuracy over the test data
     int correct = 0;
