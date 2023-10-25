@@ -29,7 +29,7 @@ public:
 
     std::string name() override
     {
-        return "Dropout";
+        return fmt::format( "Dropout (p={:.1f})", p_keep );
     }
 
     // Makes each forward pass return the same result, use only for testing
