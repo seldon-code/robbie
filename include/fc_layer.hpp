@@ -21,8 +21,8 @@ public:
               bias( Vector<scalar>( output_size ) )
     {
         auto rd   = std::random_device();
-        auto gen  = std::mt19937( 0 );
-        auto dist = std::uniform_real_distribution( -0.1, 0.1 );
+        auto gen  = std::mt19937( rd() );
+        auto dist = std::uniform_real_distribution<scalar>( -0.1, 0.1 );
 
         const auto random_lambda = [&]( scalar x ) { return dist( gen ); };
 
