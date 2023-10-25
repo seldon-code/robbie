@@ -9,22 +9,22 @@
 template<typename scalar>
 void transform_mnist_data(
     int n_samples, std::vector<std::vector<scalar>> & image_mnist, std::vector<scalar> & label_mnist,
-    std::vector<Robbie::Matrix<scalar>> & x_train, std::vector<Robbie::Matrix<scalar>> & y_train, int n_batch )
+    std::vector<Robbie::Matrix<scalar>> & x_train, std::vector<Robbie::Matrix<scalar>> & y_train, int batchsize )
 {
     // Build the training data
     x_train
-        = std::vector<Robbie::Matrix<scalar>>( n_samples / n_batch, Robbie::Matrix<scalar>::Zero( 28 * 28, n_batch ) );
+        = std::vector<Robbie::Matrix<scalar>>( n_samples / batchsize, Robbie::Matrix<scalar>::Zero( 28 * 28, batchsize ) );
 
-    y_train = std::vector<Robbie::Matrix<scalar>>( n_samples / n_batch, Robbie::Matrix<scalar>::Zero( 10, n_batch ) );
+    y_train = std::vector<Robbie::Matrix<scalar>>( n_samples / batchsize, Robbie::Matrix<scalar>::Zero( 10, batchsize ) );
 
     // Transform training data
-    for( int idx = 0; idx < n_samples; idx++ )
+    for( int idx = 0; idx < x_train.size(); idx++ )
     {
         // Get n_batch x, y from the mnist data
-        for( int i_batch = 0; i_batch < n_batch; i_batch++ )
+        for( int i_batch = 0; i_batch < batchsize; i_batch++ )
         {
-            auto img   = image_mnist[idx * n_batch + i_batch];
-            auto label = label_mnist[idx * n_batch + i_batch];
+            auto img   = image_mnist[idx * batchsize + i_batch];
+            auto label = label_mnist[idx * batchsize + i_batch];
 
             for( int idx_x = 0; idx_x < img.size(); idx_x++ )
             {
@@ -40,7 +40,7 @@ int main()
 {
     int n_train = 10000;
     int n_test  = 2000;
-    int n_batch = 1;
+    int batchsize = 1;
 
     using scalar = double;
     auto dataset = mnist::read_dataset<scalar, scalar>();
@@ -49,7 +49,7 @@ int main()
     std::vector<Robbie::Matrix<scalar>> x_train;
     std::vector<Robbie::Matrix<scalar>> y_train;
     transform_mnist_data<scalar>(
-        n_train, dataset.training_images, dataset.training_labels, x_train, y_train, n_batch );
+        n_train, dataset.training_images, dataset.training_labels, x_train, y_train, batchsize );
 
     // Build the training data
     std::vector<Robbie::Matrix<scalar>> x_test;
