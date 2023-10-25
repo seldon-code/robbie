@@ -30,29 +30,34 @@ void generate_training_data(
 int main()
 {
     using namespace Robbie;
-    std::vector<Matrix<double>> x_train( 0 );
-    std::vector<Matrix<double>> y_train( 0 );
-    std::vector<Matrix<double>> x_test( 0 );
-    std::vector<Matrix<double>> y_test( 0 );
+    using scalar = float;
 
-    int n_train    = 4000;
-    int n_test     = n_train * 0.2;
-    int input_size = 10;
+    std::vector<Matrix<scalar>> x_train( 0 );
+    std::vector<Matrix<scalar>> y_train( 0 );
+    std::vector<Matrix<scalar>> x_test( 0 );
+    std::vector<Matrix<scalar>> y_test( 0 );
 
-    generate_training_data( n_train, input_size, x_train, y_train, 5 );
-    generate_training_data( n_test, input_size, x_test, y_test, 5 );
+    int n_train       = 20000;
+    int n_test        = n_train * 0.2;
+    int input_size    = 10;
+    size_t batch_size = 5;
+
+    generate_training_data( n_train, input_size, x_train, y_train, batch_size );
+    generate_training_data( n_test, input_size, x_test, y_test, batch_size );
 
     fmt::print( "x_train[10] = {}\n", fmt::streamed( x_train[10] ) );
     fmt::print( "y_train[10] = {}\n", fmt::streamed( y_train[10] ) );
 
-    auto network = Network<double, LossFunctions::MeanSquareError>();
-    network.add( FCLayer<double>( input_size, 100 ) );
-    network.add( ActivationLayer<double, ActivationFunctions::Tanh>() );
-    network.add( DropoutLayer<double>( 0.9 ) );
-    network.add( FCLayer<double>( 100, 30 ) );
-    network.add( ActivationLayer<double, ActivationFunctions::ReLU>() );
-    network.add( FCLayer<double>( 30, 10 ) );
+    auto network = Network<scalar, LossFunctions::MeanSquareError>();
+    network.add( FCLayer<scalar>( input_size, 100 ) );
+    network.add( ActivationLayer<scalar, ActivationFunctions::Tanh>() );
+    network.add( DropoutLayer<scalar>( 0.5 ) );
+    network.add( FCLayer<scalar>( 100, 30 ) );
+    network.add( ActivationLayer<scalar, ActivationFunctions::ReLU>() );
+    network.add( FCLayer<scalar>( 30, 10 ) );
     network.summary();
 
     network.fit( x_train, y_train, 300, 0.00001, true );
+
+    fmt::print( "Loss on test set = {:.3e}\n", network.loss(x_test, y_test));
 }
