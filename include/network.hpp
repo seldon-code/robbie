@@ -56,7 +56,7 @@ public:
         auto batch_size = x_train[0].cols();
 
         fmt::print(
-            "Fitting with n_samples = {}, input_size = {}, batch_size = {}\n", n_samples, input_size, batch_size );
+            "Fitting with n_samples = {}, input_size = {}, batch_size = {}\n\n", n_samples, input_size, batch_size );
 
         auto t_fit_start = std::chrono::high_resolution_clock::now();
 
@@ -99,7 +99,7 @@ public:
         auto t_fit_end  = std::chrono::high_resolution_clock::now();
         auto total_time = std::chrono::duration_cast<std::chrono::seconds>( t_fit_end - t_fit_start );
 
-        fmt::print( "------------------------\n" );
+        fmt::print( "-----------------------------------------------------------------\n" );
         fmt::print( "Final   error = {:<10.3e} time = {:%Hh %Mm %Ss}\n", err, total_time );
     }
 
