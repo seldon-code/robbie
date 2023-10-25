@@ -50,8 +50,8 @@ public:
         auto weights_error = output_error * this->input.transpose();
 
         // update parameters by average gradient
-        weights -= ( learning_rate * weights_error ) / output_error.cols();
-        bias -= ( learning_rate * output_error ).rowwise().mean();
+        weights -= learning_rate * ( weights_error ) / output_error.cols();
+        bias -= learning_rate * ( output_error ).rowwise().mean();
 
         return input_error;
     }
