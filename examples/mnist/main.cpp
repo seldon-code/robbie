@@ -72,24 +72,21 @@ int main()
     // No. of trainable params
     network.summary();
 
-    fmt::print( "x_train[10] = {}\n", fmt::streamed( x_train[10].transpose() ) );
-    fmt::print( "label[10] = {}\n", fmt::streamed( y_train[10].transpose() ) );
-
     network.fit( x_train, y_train, 20, 0.002, true );
 
-    // // // Test on three samples
-    // // for( int i = 10; i < 30; i++ )
-    // // {
-    // //     auto out = network.predict( x_test[i] );
-    // //     // fmt::print( "Predicted value :\n {}\n", fmt::streamed( out ) );
-    // //     // fmt::print( "true_value :\n {}\n", fmt::streamed( y_test[i] ) );
-    // //     fmt::print( "label : {}\n", test.labels( i ) );
+    // Test on three samples
+    for( int i = 0; i < 3; i++ )
+    {
+        auto out = network.predict( x_test[i] );
+        // fmt::print( "Predicted value :\n {}\n", fmt::streamed( out ) );
+        // fmt::print( "true_value :\n {}\n", fmt::streamed( y_test[i] ) );
+        fmt::print( "label : {}\n", dataset.test_labels[i] );
 
-    // //     int max_index  = 0;
-    // //     int max_index2 = 0;
-    // //     out.maxCoeff( &max_index, &max_index2 );
-    // //     fmt::print( "predicted_label : {}\n----\n", max_index );
-    // // }
+        int max_index  = 0;
+        int max_index2 = 0;
+        out.maxCoeff( &max_index, &max_index2 );
+        fmt::print( "predicted_label : {}\n----\n", max_index );
+    }
 
     // Compute accuracy over the test data
     int correct = 0;
@@ -101,12 +98,12 @@ int main()
 
         out.maxCoeff( &max_index, &max_index2 );
 
-        if( max_index == int( dataset.training_labels[i] ) )
+        if( max_index == int( dataset.test_labels[i] ) )
         {
             correct++;
         }
     }
     fmt::print( "Accuracy = {} / {}  ( {:.2f} %)\n", correct, n_test, double( correct ) / n_test * 100 );
 
-    // return 0;
+    return 0;
 }
