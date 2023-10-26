@@ -49,12 +49,12 @@ int main()
     fmt::print( "y_train[10] = {}\n", fmt::streamed( y_train[10] ) );
 
     auto network = Network<scalar, LossFunctions::MeanSquareError>();
-    network.add( FCLayer<scalar>( input_size, 100 ) );
-    network.add( ActivationLayer<scalar, ActivationFunctions::Tanh>() );
-    network.add( DropoutLayer<scalar>( 0.5 ) );
-    network.add( FCLayer<scalar>( 100, 30 ) );
-    network.add( ActivationLayer<scalar, ActivationFunctions::ReLU>() );
-    network.add( FCLayer<scalar>( 30, 10 ) );
+    network.add<FCLayer<scalar>>( input_size, 100 );
+    network.add<ActivationLayer<scalar, ActivationFunctions::Tanh>>();
+    network.add<DropoutLayer<scalar>>( 0.5 );
+    network.add<FCLayer<scalar>>( 100, 30 );
+    network.add<ActivationLayer<scalar, ActivationFunctions::ReLU>>();
+    network.add<FCLayer<scalar>>( 30, 10 );
     network.summary();
 
     network.fit( x_train, y_train, 300, 0.00001, true );

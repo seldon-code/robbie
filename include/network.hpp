@@ -20,10 +20,10 @@ class Network
 public:
     Network() = default;
 
-    template<typename LayerT>
-    void add( LayerT && layer )
+    template<typename LayerT, typename... T>
+    void add( T... args )
     {
-        layers.push_back( std::make_unique<LayerT>( layer ) );
+        layers.emplace_back( std::make_unique<LayerT>( args... ) );
     }
 
     Matrix<scalar> predict( const Matrix<scalar> & input_data )

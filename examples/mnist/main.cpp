@@ -59,10 +59,10 @@ int main()
     transform_mnist_data<scalar>( n_test, dataset.test_images, dataset.test_labels, x_test, y_test, 1 );
 
     auto network = Robbie::Network<scalar, Robbie::LossFunctions::MeanSquareError>();
-    network.add( Robbie::FCLayer<scalar>( 28 * 28, 100 ) );
-    network.add( Robbie::ActivationLayer<scalar, Robbie::ActivationFunctions::ReLU>() );
+    network.add<Robbie::FCLayer<scalar>>( 28 * 28, 100 );
+    network.add<Robbie::ActivationLayer<scalar, Robbie::ActivationFunctions::ReLU>>();
     // network.add( Robbie::DropoutLayer<scalar>( 0.5 ) );
-    network.add( Robbie::FCLayer<scalar>( 100, 10 ) );
+    network.add<Robbie::FCLayer<scalar>>( 100, 10 );
 
     // No. of trainable params
     network.summary();

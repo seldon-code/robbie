@@ -1,7 +1,9 @@
 #pragma once
-// #include <eigen3/Eigen/src/Core/util/Constants.h>
 #include "defines.hpp"
+#include "optimizer.hpp"
+#include "stochastic_gradient_descent.hpp"
 #include <eigen3/Eigen/Dense>
+#include <memory>
 #include <optional>
 
 namespace Robbie
@@ -15,6 +17,7 @@ protected:
     Matrix<scalar> output;
     std::optional<size_t> input_size  = std::nullopt;
     std::optional<size_t> output_size = std::nullopt;
+    std::unique_ptr<Optimizer<scalar>> opt;
 
 public:
     Layer() = default;
@@ -22,6 +25,13 @@ public:
             : input_size( input_size ), output_size( output_size )
     {
     }
+
+    // TODO: figure out how to implement copy constructor
+    // Layer( const Layer & l )
+    //         : input( l.input ), output( l.output ), input_size( l.input_size ), output_size( l.output_size )
+    // {
+    //     opt = std::make_unique<Optimizer<scalar>>( l.opt );
+    // }
 
     virtual std::string name() = 0;
 
