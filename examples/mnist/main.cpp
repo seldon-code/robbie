@@ -4,6 +4,7 @@
 #include "robbie.hpp"
 #include <fmt/format.h>
 #include <fmt/ostream.h>
+#include <cstddef>
 #include <iostream>
 
 template<typename scalar>
@@ -12,13 +13,14 @@ void transform_mnist_data(
     std::vector<Robbie::Matrix<scalar>> & x_train, std::vector<Robbie::Matrix<scalar>> & y_train, int batchsize )
 {
     // Build the training data
-    x_train
-        = std::vector<Robbie::Matrix<scalar>>( n_samples / batchsize, Robbie::Matrix<scalar>::Zero( 28 * 28, batchsize ) );
+    x_train = std::vector<Robbie::Matrix<scalar>>(
+        n_samples / batchsize, Robbie::Matrix<scalar>::Zero( 28 * 28, batchsize ) );
 
-    y_train = std::vector<Robbie::Matrix<scalar>>( n_samples / batchsize, Robbie::Matrix<scalar>::Zero( 10, batchsize ) );
+    y_train
+        = std::vector<Robbie::Matrix<scalar>>( n_samples / batchsize, Robbie::Matrix<scalar>::Zero( 10, batchsize ) );
 
     // Transform training data
-    for( int idx = 0; idx < x_train.size(); idx++ )
+    for( size_t idx = 0; idx < x_train.size(); idx++ )
     {
         // Get n_batch x, y from the mnist data
         for( int i_batch = 0; i_batch < batchsize; i_batch++ )
@@ -26,7 +28,7 @@ void transform_mnist_data(
             auto img   = image_mnist[idx * batchsize + i_batch];
             auto label = label_mnist[idx * batchsize + i_batch];
 
-            for( int idx_x = 0; idx_x < img.size(); idx_x++ )
+            for( size_t idx_x = 0; idx_x < img.size(); idx_x++ )
             {
                 x_train[idx].col( i_batch )[idx_x] = img[idx_x] / 255.0;
             }
@@ -38,8 +40,8 @@ void transform_mnist_data(
 
 int main()
 {
-    int n_train = 10000;
-    int n_test  = 2000;
+    int n_train   = 10000;
+    int n_test    = 2000;
     int batchsize = 1;
 
     using scalar = double;

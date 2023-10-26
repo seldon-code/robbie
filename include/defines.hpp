@@ -1,6 +1,6 @@
 #pragma once
-
 #include <eigen3/Eigen/Dense>
+
 namespace Robbie
 {
 template<typename scalar>

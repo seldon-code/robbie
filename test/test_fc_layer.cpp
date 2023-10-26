@@ -6,13 +6,12 @@
 
 TEST_CASE( "Test_FullyConnectedLayer" )
 {
-    long input_size      = 2;
-    long output_size     = 3;
-    double learning_rate = 0.01;
-    auto layer           = Robbie::FCLayer<double>( input_size, output_size );
-    auto y_get           = Robbie::Matrix<double>( output_size, 1 );
-    auto y_actual        = Robbie::Matrix<double>( output_size, 1 );
-    auto X               = Robbie::Matrix<double>( input_size, 1 );
+    long input_size  = 2;
+    long output_size = 3;
+    auto layer       = Robbie::FCLayer<double>( input_size, output_size );
+    auto y_get       = Robbie::Matrix<double>( output_size, 1 );
+    auto y_actual    = Robbie::Matrix<double>( output_size, 1 );
+    auto X           = Robbie::Matrix<double>( input_size, 1 );
     X << -3, 2;
 
     auto weights = Robbie::Matrix<double>( input_size, output_size );

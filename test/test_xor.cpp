@@ -9,13 +9,13 @@
 TEST_CASE( "Test_XOR" )
 {
     using namespace Robbie;
-    std::vector<Matrix<double>> x_train( 4, Matrix<double>( 2, 1 ) );
+    std::vector<Matrix<double>> x_train( 4, Matrix<double>::Zero( 2, 1 ) );
     x_train[0] << 0, 0;
     x_train[1] << 0, 1;
     x_train[2] << 1, 0;
     x_train[3] << 1, 1;
 
-    std::vector<Matrix<double>> y_train( 4, Matrix<double>( 1, 1 ) );
+    std::vector<Matrix<double>> y_train( 4, Matrix<double>::Zero( 1, 1 ) );
     y_train[0] << 0;
     y_train[1] << 1;
     y_train[2] << 1;
@@ -27,7 +27,7 @@ TEST_CASE( "Test_XOR" )
     network.add( FCLayer<double>( 3, 1 ) );
     network.add( ActivationLayer<double, ActivationFunctions::Tanh>() );
 
-    network.fit( x_train, y_train, 1000, 0.1 );
+    network.fit( x_train, y_train, 2000, 0.1 );
 
     auto out = network.predict( x_train );
 

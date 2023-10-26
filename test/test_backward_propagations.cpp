@@ -10,8 +10,6 @@
 template<typename scalar>
 void test_backward_propagation( Robbie::Layer<scalar> * layer, const Robbie::Matrix<scalar> & x0, size_t output_size )
 {
-    auto input_size = x0.size();
-
     // The loss function is the sum of outputs E = y1 + ... + yN
     auto loss0 = layer->forward_propagation( x0 ).colwise().sum().eval();
 

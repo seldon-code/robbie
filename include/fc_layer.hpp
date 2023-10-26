@@ -24,7 +24,7 @@ public:
         auto gen  = std::mt19937( rd() );
         auto dist = std::uniform_real_distribution<scalar>( -0.1, 0.1 );
 
-        const auto random_lambda = [&]( scalar x ) { return dist( gen ); };
+        const auto random_lambda = [&]( [[maybe_unused]] scalar x ) { return dist( gen ); };
 
         weights = weights.array().unaryExpr( random_lambda );
         bias    = bias.array().unaryExpr( random_lambda );

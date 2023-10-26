@@ -34,7 +34,7 @@ void mnist_loader::load_images( std::string image_file, int num )
     char p[4];
 
     ifs.read( p, 4 );
-    int magic_number = to_int( p );
+    [[maybe_unused]] int magic_number = to_int( p );
     assert( magic_number == 0x803 );
 
     ifs.read( p, 4 );
@@ -74,7 +74,7 @@ void mnist_loader::load_labels( std::string label_file, int num )
     char p[4];
 
     ifs.read( p, 4 );
-    int magic_number = to_int( p );
+    [[maybe_unused]] int magic_number = to_int( p );
     assert( magic_number == 0x801 );
 
     ifs.read( p, 4 );

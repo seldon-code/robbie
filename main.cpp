@@ -19,7 +19,7 @@ void generate_training_data(
 
     for( int i = 0; i < n_samples; i++ )
     {
-        const auto random_lambda = [&]( scalar x ) { return dist( gen ); };
+        const auto random_lambda = [&]( [[maybe_unused]] scalar x ) { return dist( gen ); };
         Robbie::Matrix<scalar> x_cur
             = Robbie::Matrix<scalar>::Zero( input_size, batchsize ).array().unaryExpr( random_lambda );
         x_train.push_back( x_cur );
@@ -59,5 +59,5 @@ int main()
 
     network.fit( x_train, y_train, 300, 0.00001, true );
 
-    fmt::print( "Loss on test set = {:.3e}\n", network.loss(x_test, y_test));
+    fmt::print( "Loss on test set = {:.3e}\n", network.loss( x_test, y_test ) );
 }

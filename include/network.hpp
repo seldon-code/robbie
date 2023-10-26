@@ -62,7 +62,7 @@ public:
 
     void
     fit( const std::vector<Matrix<scalar>> & x_train, const std::vector<Matrix<scalar>> & y_train, size_t epochs,
-         scalar learning_rate, bool print_progress = false, size_t batchsize = 1 )
+         scalar learning_rate, bool print_progress = false )
     {
         auto n_samples  = x_train.size();
         auto input_size = x_train[0].rows();

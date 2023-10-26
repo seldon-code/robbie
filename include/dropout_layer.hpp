@@ -48,8 +48,9 @@ public:
             }
 
         dropout_mask.resize( input_data.rows(), 1 );
-        const auto dropout_lambda
-            = [&]( scalar x ) { return static_cast<scalar>( dist( gen ) > this->p_keep ? 0.0 : 1.0 / p_keep ); };
+        const auto dropout_lambda = [&]( [[maybe_unused]] scalar x ) {
+            return static_cast<scalar>( dist( gen ) > this->p_keep ? 0.0 : 1.0 / p_keep );
+        };
         dropout_mask = dropout_mask.array().unaryExpr( dropout_lambda );
 
         this->output = input_data.array().colwise() * dropout_mask.array();
@@ -57,13 +58,14 @@ public:
     }
 
     // For predictions, no dropout is applied
-    Matrix<scalar> predict( const Matrix<scalar> & input_data ) override
+    Matrix<scalar> predict( [[maybe_unused]] const Matrix<scalar> & input_data ) override
     {
         return this->output;
     }
 
     // computes dE/dW, dE/dB for a given output_error=dE/dY. Returns input_error=dE/dX.
-    Matrix<scalar> backward_propagation( const Matrix<scalar> & output_error, scalar learning_rate ) override
+    Matrix<scalar>
+    backward_propagation( const Matrix<scalar> & output_error, [[maybe_unused]] scalar learning_rate ) override
     {
         auto input_error = output_error.array().colwise() * dropout_mask.array();
         return input_error;
