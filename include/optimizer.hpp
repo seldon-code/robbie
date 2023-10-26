@@ -1,6 +1,6 @@
 #pragma once
 #include "defines.hpp"
-#include <vector>
+#include <optional>
 
 namespace Robbie
 {
@@ -11,10 +11,12 @@ class Optimizer
 public:
     Optimizer()          = default;
     virtual ~Optimizer() = default;
+    using opt_matrix_t   = Matrix<scalar> *;
+    using opt_vector_t   = Vector<scalar> *;
 
     virtual void optimize(
-        std::vector<Eigen::Ref<Robbie::Matrix<scalar>>> & variables,
-        const std::vector<Eigen::Ref<Matrix<scalar>>> & gradients )
+        opt_matrix_t matrix_variable, opt_matrix_t matrix_gradient, opt_vector_t vector_variable,
+        opt_vector_t vector_gradient )
         = 0;
 };
 } // namespace Robbie

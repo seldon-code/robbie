@@ -5,6 +5,7 @@
 #include <eigen3/Eigen/src/Core/Matrix.h>
 #include <cstddef>
 #include <random>
+
 namespace Robbie
 {
 template<typename scalar>
@@ -46,12 +47,14 @@ public:
     // computes dE/dW, dE/dB for a given output_error=dE/dY. Returns input_error=dE/dX.
     Matrix<scalar> backward_propagation( const Matrix<scalar> & output_error, scalar learning_rate ) override
     {
-        auto input_error   = weights.transpose() * output_error;
-        auto weights_error = output_error * this->input.transpose();
+        auto input_error = weights.transpose() * output_error;
+        Matrix<scalar> weights_error = output_error * this->input.transpose() / output_error.cols();
+        Vector<scalar> bias_error = ( output_error ).rowwise().mean();
 
-        // update parameters by average gradient
-        weights -= learning_rate * ( weights_error ) / output_error.cols();
-        bias -= learning_rate * ( output_error ).rowwise().mean();
+        // weights -= learning_rate * weights_error ;
+        // bias -= learning_rate * ( output_error ).rowwise().mean();
+
+        this->opt->optimize( &weights, &weights_error, &bias, &bias_error );
 
         return input_error;
     }

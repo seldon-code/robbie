@@ -22,7 +22,9 @@ protected:
 public:
     Layer() = default;
     Layer( std::optional<size_t> input_size, std::optional<size_t> output_size )
-            : input_size( input_size ), output_size( output_size )
+            : input_size( input_size ),
+              output_size( output_size ),
+              opt( std::make_unique<StochasticGradientDescent<scalar>>( 0.1 ) )
     {
     }
 
