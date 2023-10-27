@@ -1,6 +1,7 @@
 #pragma once
 #include "defines.hpp"
 #include "layer.hpp"
+#include "optimizers.hpp"
 #include <fmt/chrono.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
@@ -67,6 +68,11 @@ public:
         auto n_samples  = x_train.size();
         auto input_size = x_train[0].rows();
         auto batch_size = x_train[0].cols();
+
+        for( auto & l : layers )
+        {
+            l->opt = std::make_unique<Optimizers::StochasticGradientDescent<scalar>>( learning_rate );
+        }
 
         fmt::print(
             "Fitting with n_samples = {}, input_size = {}, batch_size = {}\n\n", n_samples, input_size, batch_size );

@@ -23,7 +23,7 @@ public:
     {
         auto rd   = std::random_device();
         auto gen  = std::mt19937( rd() );
-        auto dist = std::uniform_real_distribution<scalar>( -0.1, 0.1 );
+        auto dist = std::uniform_real_distribution<scalar>( -1, 1 );
 
         const auto random_lambda = [&]( [[maybe_unused]] scalar x ) { return dist( gen ); };
 
@@ -50,13 +50,9 @@ public:
         auto input_error = weights.transpose() * output_error;
         Matrix<scalar> weights_error = output_error * this->input.transpose() / output_error.cols();
         Vector<scalar> bias_error = ( output_error ).rowwise().mean();
-
-        // weights -= learning_rate * weights_error ;
-        // bias -= learning_rate * ( output_error ).rowwise().mean();
-
         this->opt->optimize( &weights, &weights_error, &bias, &bias_error );
-
         return input_error;
+
     }
 
     // Return the number of trainable parameters

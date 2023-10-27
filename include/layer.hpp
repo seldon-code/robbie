@@ -1,7 +1,6 @@
 #pragma once
 #include "defines.hpp"
-#include "optimizer.hpp"
-#include "stochastic_gradient_descent.hpp"
+#include "optimizers.hpp"
 #include <eigen3/Eigen/Dense>
 #include <memory>
 #include <optional>
@@ -17,16 +16,17 @@ protected:
     Matrix<scalar> output;
     std::optional<size_t> input_size  = std::nullopt;
     std::optional<size_t> output_size = std::nullopt;
-    std::unique_ptr<Optimizer<scalar>> opt;
 
 public:
     Layer() = default;
     Layer( std::optional<size_t> input_size, std::optional<size_t> output_size )
             : input_size( input_size ),
               output_size( output_size ),
-              opt( std::make_unique<StochasticGradientDescent<scalar>>( 0.1 ) )
+              opt( std::make_unique<Optimizers::StochasticGradientDescent<scalar>>( 0.1 ) )
     {
     }
+
+    std::unique_ptr<Optimizers::Optimizer<scalar>> opt;
 
     // TODO: figure out how to implement copy constructor
     // Layer( const Layer & l )
