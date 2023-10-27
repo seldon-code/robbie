@@ -24,9 +24,9 @@ TEST_CASE( "Test_XOR" )
     auto network     = Network<double, LossFunctions::MeanSquareError>();
     network.loss_tol = 5e-4;
 
-    network.add<FCLayer<double>>( 2, 3 );
+    network.add<FCLayer<double>>( 2, 10 );
     network.add<ActivationLayer<double, ActivationFunctions::Tanh>>();
-    network.add<FCLayer<double>>( 3, 1 );
+    network.add<FCLayer<double>>( 10, 1 );
     network.add<ActivationLayer<double, ActivationFunctions::Tanh>>();
 
     network.fit( x_train, y_train, 50000, 0.01 );
