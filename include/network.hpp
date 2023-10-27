@@ -8,6 +8,7 @@
 #include <chrono>
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <type_traits>
 #include <vector>
 
@@ -19,6 +20,8 @@ class Network
 {
 
 public:
+    std::optional<scalar> loss_tol = std::nullopt;
+
     Network() = default;
 
     template<typename LayerT, typename... T>
@@ -112,6 +115,15 @@ public:
             {
                 fmt::print(
                     "Epoch {}/{}   error = {:<10.3e} epoch_time = {:%Hh %Mm %Ss}\n", i + 1, epochs, err, epoch_time );
+            }
+
+            if( loss_tol.has_value() )
+            {
+                if( err < loss_tol.value() )
+                {
+                    fmt::print( "Converged\n" );
+                    break;
+                }
             }
         }
 

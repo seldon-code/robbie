@@ -21,13 +21,15 @@ TEST_CASE( "Test_XOR" )
     y_train[2] << 1;
     y_train[3] << 0;
 
-    auto network = Network<double, LossFunctions::MeanSquareError>();
+    auto network     = Network<double, LossFunctions::MeanSquareError>();
+    network.loss_tol = 5e-4;
+
     network.add<FCLayer<double>>( 2, 3 );
     network.add<ActivationLayer<double, ActivationFunctions::Tanh>>();
     network.add<FCLayer<double>>( 3, 1 );
     network.add<ActivationLayer<double, ActivationFunctions::Tanh>>();
 
-    network.fit( x_train, y_train, 2000, 0.1 );
+    network.fit( x_train, y_train, 50000, 0.01 );
 
     auto out = network.predict( x_train );
 
