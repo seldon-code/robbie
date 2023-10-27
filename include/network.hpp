@@ -136,7 +136,7 @@ public:
 
     void summary()
     {
-        n_trainable_params = 0;
+        size_t n_trainable_params = 0;
 
         for( auto & layer : layers )
         {
@@ -168,7 +168,6 @@ public:
 
 private:
     std::vector<std::unique_ptr<Layer<scalar>>> layers;
-    int n_trainable_params;
 };
 
 } // namespace Robbie

@@ -1,6 +1,7 @@
 #pragma once
 #include "defines.hpp"
 #include "optimizers.hpp"
+#include <cstddef>
 #include <eigen3/Eigen/Dense>
 #include <memory>
 #include <optional>
@@ -60,7 +61,7 @@ public:
     virtual Matrix<scalar> backward_propagation( const Matrix<scalar> & output_error ) = 0;
 
     // Get trainable parameters
-    virtual int get_trainable_params() = 0;
+    virtual size_t get_trainable_params() = 0;
 
     virtual ~Layer() = default;
 };
