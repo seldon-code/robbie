@@ -1,7 +1,9 @@
 #pragma once
-// #include <eigen3/Eigen/src/Core/util/Constants.h>
 #include "defines.hpp"
+#include "optimizers.hpp"
+#include <cstddef>
 #include <eigen3/Eigen/Dense>
+#include <memory>
 #include <optional>
 
 namespace Robbie
@@ -19,9 +21,20 @@ protected:
 public:
     Layer() = default;
     Layer( std::optional<size_t> input_size, std::optional<size_t> output_size )
-            : input_size( input_size ), output_size( output_size )
+            : input_size( input_size ),
+              output_size( output_size ),
+              opt( std::make_unique<Optimizers::StochasticGradientDescent<scalar>>( 0.1 ) )
     {
     }
+
+    std::unique_ptr<Optimizers::Optimizer<scalar>> opt;
+
+    // TODO: figure out how to implement copy constructor
+    // Layer( const Layer & l )
+    //         : input( l.input ), output( l.output ), input_size( l.input_size ), output_size( l.output_size )
+    // {
+    //     opt = std::make_unique<Optimizer<scalar>>( l.opt );
+    // }
 
     virtual std::string name() = 0;
 
@@ -45,10 +58,10 @@ public:
     };
 
     // computes dE/dX for a given dE/dY (and update parameters if any)
-    virtual Matrix<scalar> backward_propagation( const Matrix<scalar> & output_error, scalar learning_rate ) = 0;
+    virtual Matrix<scalar> backward_propagation( const Matrix<scalar> & output_error ) = 0;
 
     // Get trainable parameters
-    virtual int get_trainable_params() = 0;
+    virtual size_t get_trainable_params() = 0;
 
     virtual ~Layer() = default;
 };

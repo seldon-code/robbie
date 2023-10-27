@@ -1,5 +1,6 @@
 #pragma once
 #include "layer.hpp"
+#include <cstddef>
 
 namespace Robbie
 {
@@ -23,14 +24,13 @@ public:
     }
 
     // computes dE/dX for a given dE/dY (and update parameters if any)
-    Matrix<scalar>
-    backward_propagation( const Matrix<scalar> & output_error, scalar learning_rate [[maybe_unused]] ) override
+    Matrix<scalar> backward_propagation( const Matrix<scalar> & output_error ) override
     {
         return Activation::df( this->input ).array() * output_error.array();
     }
 
     // Return the number of trainable parameters
-    int get_trainable_params() override
+    size_t get_trainable_params() override
     {
         return 0;
     }

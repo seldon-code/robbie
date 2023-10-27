@@ -1,12 +1,14 @@
 #pragma once
 #include "defines.hpp"
 #include "layer.hpp"
+#include "optimizers.hpp"
 #include <fmt/chrono.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <chrono>
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <type_traits>
 #include <vector>
 
@@ -18,12 +20,14 @@ class Network
 {
 
 public:
+    std::optional<scalar> loss_tol = std::nullopt;
+
     Network() = default;
 
-    template<typename LayerT>
-    void add( LayerT && layer )
+    template<typename LayerT, typename... T>
+    void add( T... args )
     {
-        layers.push_back( std::make_unique<LayerT>( layer ) );
+        layers.emplace_back( std::make_unique<LayerT>( args... ) );
     }
 
     Matrix<scalar> predict( const Matrix<scalar> & input_data )
@@ -68,6 +72,11 @@ public:
         auto input_size = x_train[0].rows();
         auto batch_size = x_train[0].cols();
 
+        for( auto & l : layers )
+        {
+            l->opt = std::move( std::make_unique<Optimizers::StochasticGradientDescent<scalar>>( learning_rate ) );
+        }
+
         fmt::print(
             "Fitting with n_samples = {}, input_size = {}, batch_size = {}\n\n", n_samples, input_size, batch_size );
 
@@ -94,7 +103,7 @@ public:
                 for( int i_layer = layers.size() - 1; i_layer >= 0; --i_layer )
                 {
                     auto & layer = layers[i_layer];
-                    error        = layer->backward_propagation( error, learning_rate );
+                    error        = layer->backward_propagation( error );
                 }
             }
 
@@ -107,6 +116,15 @@ public:
                 fmt::print(
                     "Epoch {}/{}   error = {:<10.3e} epoch_time = {:%Hh %Mm %Ss}\n", i + 1, epochs, err, epoch_time );
             }
+
+            if( loss_tol.has_value() )
+            {
+                if( err < loss_tol.value() )
+                {
+                    fmt::print( "Converged\n" );
+                    break;
+                }
+            }
         }
 
         auto t_fit_end  = std::chrono::high_resolution_clock::now();
@@ -118,7 +136,7 @@ public:
 
     void summary()
     {
-        n_trainable_params = 0;
+        size_t n_trainable_params = 0;
 
         for( auto & layer : layers )
         {
@@ -150,7 +168,6 @@ public:
 
 private:
     std::vector<std::unique_ptr<Layer<scalar>>> layers;
-    int n_trainable_params;
 };
 
 } // namespace Robbie

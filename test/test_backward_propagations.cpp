@@ -1,15 +1,23 @@
+#include "activation_functions.hpp"
 #include "activation_layer.hpp"
 #include "defines.hpp"
-#include "robbie.hpp"
+#include "dropout_layer.hpp"
+#include "fc_layer.hpp"
+#include "optimizers.hpp"
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
 #include <cstddef>
+#include <memory>
 
 template<typename scalar>
 void test_backward_propagation( Robbie::Layer<scalar> * layer, const Robbie::Matrix<scalar> & x0, size_t output_size )
 {
+    // Use the DoNothing optimizer
+    // Otherwise the weights will change on the backward propagation and we cannot compare to subsequent forward optimizations
+    layer->opt = std::move( std::make_unique<Robbie::Optimizers::DoNothing<scalar>>() );
+
     // The loss function is the sum of outputs E = y1 + ... + yN
     auto loss0 = layer->forward_propagation( x0 ).colwise().sum().eval();
 
@@ -17,7 +25,7 @@ void test_backward_propagation( Robbie::Layer<scalar> * layer, const Robbie::Mat
     auto output_error = Robbie::Matrix<scalar>::Ones( output_size, x0.cols() );
 
     // The input error should be dE/dX
-    auto input_error = layer->backward_propagation( output_error, 0.0 );
+    auto input_error = layer->backward_propagation( output_error );
 
     // changing any component of x0 to x0[i] -> x0[i] + epsilon, should change the sum of outputs
     // by input_error[i] * epsilon we will test this individually for each component

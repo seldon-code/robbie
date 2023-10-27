@@ -5,6 +5,7 @@
 #include <eigen3/Eigen/src/Core/Matrix.h>
 #include <cstddef>
 #include <random>
+
 namespace Robbie
 {
 template<typename scalar>
@@ -22,7 +23,7 @@ public:
     {
         auto rd   = std::random_device();
         auto gen  = std::mt19937( rd() );
-        auto dist = std::uniform_real_distribution<scalar>( -0.1, 0.1 );
+        auto dist = std::uniform_real_distribution<scalar>( -1, 1 );
 
         const auto random_lambda = [&]( [[maybe_unused]] scalar x ) { return dist( gen ); };
 
@@ -44,20 +45,17 @@ public:
     }
 
     // computes dE/dW, dE/dB for a given output_error=dE/dY. Returns input_error=dE/dX.
-    Matrix<scalar> backward_propagation( const Matrix<scalar> & output_error, scalar learning_rate ) override
+    Matrix<scalar> backward_propagation( const Matrix<scalar> & output_error ) override
     {
-        auto input_error   = weights.transpose() * output_error;
-        auto weights_error = output_error * this->input.transpose();
-
-        // update parameters by average gradient
-        weights -= learning_rate * ( weights_error ) / output_error.cols();
-        bias -= learning_rate * ( output_error ).rowwise().mean();
-
+        auto input_error             = weights.transpose() * output_error;
+        Matrix<scalar> weights_error = output_error * this->input.transpose() / output_error.cols();
+        Vector<scalar> bias_error    = ( output_error ).rowwise().mean();
+        this->opt->optimize( &weights, &weights_error, &bias, &bias_error );
         return input_error;
     }
 
     // Return the number of trainable parameters
-    int get_trainable_params() override
+    size_t get_trainable_params() override
     {
         return this->weights.size() + this->bias.size();
     }
