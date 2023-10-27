@@ -74,7 +74,7 @@ public:
 
         for( auto & l : layers )
         {
-            l->opt = std::make_unique<Optimizers::StochasticGradientDescent<scalar>>( learning_rate );
+            l->opt = std::move( std::make_unique<Optimizers::StochasticGradientDescent<scalar>>( learning_rate ) );
         }
 
         fmt::print(
