@@ -37,7 +37,7 @@ int main()
     std::vector<Matrix<scalar>> x_test( 0 );
     std::vector<Matrix<scalar>> y_test( 0 );
 
-    int n_train       = 20000;
+    int n_train       = 200;
     int n_test        = n_train * 0.2;
     int input_size    = 10;
     size_t batch_size = 5;
