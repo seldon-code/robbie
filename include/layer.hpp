@@ -57,7 +57,7 @@ public:
     };
 
     // computes dE/dX for a given dE/dY (and update parameters if any)
-    virtual Matrix<scalar> backward_propagation( const Matrix<scalar> & output_error, scalar learning_rate ) = 0;
+    virtual Matrix<scalar> backward_propagation( const Matrix<scalar> & output_error ) = 0;
 
     // Get trainable parameters
     virtual int get_trainable_params() = 0;

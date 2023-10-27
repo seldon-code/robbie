@@ -100,7 +100,7 @@ public:
                 for( int i_layer = layers.size() - 1; i_layer >= 0; --i_layer )
                 {
                     auto & layer = layers[i_layer];
-                    error        = layer->backward_propagation( error, learning_rate );
+                    error        = layer->backward_propagation( error );
                 }
             }
 

@@ -45,14 +45,13 @@ public:
     }
 
     // computes dE/dW, dE/dB for a given output_error=dE/dY. Returns input_error=dE/dX.
-    Matrix<scalar> backward_propagation( const Matrix<scalar> & output_error, scalar learning_rate ) override
+    Matrix<scalar> backward_propagation( const Matrix<scalar> & output_error ) override
     {
-        auto input_error = weights.transpose() * output_error;
+        auto input_error             = weights.transpose() * output_error;
         Matrix<scalar> weights_error = output_error * this->input.transpose() / output_error.cols();
-        Vector<scalar> bias_error = ( output_error ).rowwise().mean();
+        Vector<scalar> bias_error    = ( output_error ).rowwise().mean();
         this->opt->optimize( &weights, &weights_error, &bias, &bias_error );
         return input_error;
-
     }
 
     // Return the number of trainable parameters

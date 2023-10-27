@@ -64,8 +64,7 @@ public:
     }
 
     // computes dE/dW, dE/dB for a given output_error=dE/dY. Returns input_error=dE/dX.
-    Matrix<scalar>
-    backward_propagation( const Matrix<scalar> & output_error, [[maybe_unused]] scalar learning_rate ) override
+    Matrix<scalar> backward_propagation( const Matrix<scalar> & output_error ) override
     {
         auto input_error = output_error.array().colwise() * dropout_mask.array();
         return input_error;

@@ -25,7 +25,7 @@ void test_backward_propagation( Robbie::Layer<scalar> * layer, const Robbie::Mat
     auto output_error = Robbie::Matrix<scalar>::Ones( output_size, x0.cols() );
 
     // The input error should be dE/dX
-    auto input_error = layer->backward_propagation( output_error, 0.0 );
+    auto input_error = layer->backward_propagation( output_error );
 
     // changing any component of x0 to x0[i] -> x0[i] + epsilon, should change the sum of outputs
     // by input_error[i] * epsilon we will test this individually for each component
