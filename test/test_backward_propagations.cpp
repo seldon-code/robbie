@@ -44,7 +44,6 @@ void test_backward_propagation( Robbie::Layer<scalar> * layer, const Robbie::Mat
 
         auto derivative_fd = ( loss_new - loss0 ) / epsilon;
 
-        fmt::print( "output_error[{}] = {}\n", i, fmt::streamed( output_error.row( i ) ) );
         fmt::print( "input_error[{}] = {}\n", i, fmt::streamed( input_error.row( i ) ) );
         fmt::print( "derivative_fd = {}\n", fmt::streamed( derivative_fd ) );
 
