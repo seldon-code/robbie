@@ -49,20 +49,15 @@ public:
         opt_matrix_t matrix_variable, opt_matrix_t matrix_gradient, opt_vector_t vector_variable,
         opt_vector_t vector_gradient ) override
     {
-        // fmt::print( "learning_rate = {}\n", learning_rate );
-        // fmt::print( "weights before = {}\n", fmt::streamed(*matrix_variable) );
         if( matrix_variable != nullptr )
         {
             *( matrix_variable ) -= learning_rate * ( *matrix_gradient );
         }
-        // fmt::print( "weights after = {}\n", fmt::streamed(*matrix_variable) );
 
-        // fmt::print( "biase before = {}\n", fmt::streamed(*vector_variable) );
         if( vector_variable != nullptr )
         {
             *( vector_variable ) -= learning_rate * ( *vector_gradient );
         }
-        // fmt::print( "biase after = {}\n", fmt::streamed(*vector_variable) );
     }
 };
 
