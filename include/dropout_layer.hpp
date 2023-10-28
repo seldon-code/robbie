@@ -60,7 +60,7 @@ public:
     // For predictions, no dropout is applied
     Matrix<scalar> predict( [[maybe_unused]] const Matrix<scalar> & input_data ) override
     {
-        return this->output;
+        return input_data;
     }
 
     // computes dE/dW, dE/dB for a given output_error=dE/dY. Returns input_error=dE/dX.
