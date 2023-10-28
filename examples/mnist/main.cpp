@@ -40,9 +40,9 @@ void transform_mnist_data(
 
 int main()
 {
-    int n_train   = 10000;
-    int n_test    = 2000;
-    int batchsize = 1;
+    int n_train   = 1000;
+    int n_test    = 1000;
+    int batchsize = 20;
 
     using scalar = double;
     auto dataset = mnist::read_dataset<scalar, scalar>();
@@ -61,13 +61,13 @@ int main()
     auto network = Robbie::Network<scalar, Robbie::LossFunctions::MeanSquareError>();
     network.add<Robbie::FCLayer<scalar>>( 28 * 28, 100 );
     network.add<Robbie::ActivationLayer<scalar, Robbie::ActivationFunctions::ReLU>>();
-    // network.add( Robbie::DropoutLayer<scalar>( 0.5 ) );
+    network.add<Robbie::DropoutLayer<scalar>>( 0.5 );
     network.add<Robbie::FCLayer<scalar>>( 100, 10 );
 
     // No. of trainable params
     network.summary();
-
-    network.fit( x_train, y_train, 20, 0.002, true );
+    network.loss_tol = 2e-2;
+    network.fit( x_train, y_train, 1000, 0.01, true );
 
     fmt::print( "Loss on test set = {:.3e}\n", network.loss( x_test, y_test ) );
 
