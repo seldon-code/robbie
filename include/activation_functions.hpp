@@ -42,4 +42,22 @@ public:
     }
 };
 
+class Softmax
+{
+public:
+    template<typename Derived>
+    static auto f( const Eigen::MatrixBase<Derived> & x )
+    {
+        // The static_cast is necessary to make different scalar types than double compile
+        return x.array().exp() / x.array().exp().sum();
+    }
+
+    template<typename Derived>
+    static auto df( const Eigen::MatrixBase<Derived> & x )
+    {
+        auto sum = x.array().exp().sum();
+        return 1.0 / sum * ( 1.0 - 1.0 / sum ) * x.array().exp();
+    }
+};
+
 } // namespace Robbie::ActivationFunctions

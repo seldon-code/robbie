@@ -34,4 +34,5 @@ TEST_CASE( "Test_ActivationFunctions" )
 {
     test_func<Robbie::ActivationFunctions::Tanh>();
     test_func<Robbie::ActivationFunctions::ReLU>();
+    test_func<Robbie::ActivationFunctions::Softmax>();
 }
