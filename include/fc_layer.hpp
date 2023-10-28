@@ -27,8 +27,8 @@ public:
 
         const auto random_lambda = [&]( [[maybe_unused]] scalar x ) { return dist( gen ); };
 
-        weights = weights.array().unaryExpr( random_lambda );
-        bias    = bias.array().unaryExpr( random_lambda );
+        weights = weights.array().unaryExpr( random_lambda ) / std::sqrt( input_size );
+        bias    = bias.array().unaryExpr( random_lambda ) / std::sqrt( input_size );
     }
 
     std::string name() override
