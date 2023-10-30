@@ -93,6 +93,7 @@ private:
 
 public:
     Adam() = default;
+    Adam( scalar alpha ) : alpha( alpha ) {}
     Adam( scalar alpha, scalar beta1, scalar beta2, scalar epsilon )
             : alpha( alpha ), beta1( beta1 ), beta2( beta2 ), epsilon( epsilon )
     {
@@ -109,39 +110,24 @@ public:
 
         scalar beta_1_t = std::pow( beta1, timestep + 1 );
         scalar beta_2_t = std::pow( beta2, timestep + 1 );
+        scalar alpha_t  = alpha * std::sqrt( 1.0 - beta_2_t ) / ( 1.0 - beta_1_t );
 
         if( matrix_variable != nullptr )
         {
             // Update first moments
             m_matrix = m_matrix * beta1 + ( 1.0 - beta1 ) * ( *matrix_gradient );
-
             // Update second moments
             v_matrix = v_matrix * beta2 + ( 1.0 - beta2 ) * matrix_gradient->array().pow( 2 ).matrix();
-
-            // Bias corrected first moments
-            auto m_hat = m_matrix / ( 1.0 - beta_1_t );
-
-            // Bias corrected second moments
-            auto v_hat = v_matrix / ( 1.0 - beta_2_t );
-
-            *matrix_variable -= alpha * ( m_hat.array() / ( v_hat.array().sqrt() + epsilon ) ).matrix();
+            *matrix_variable -= alpha_t * ( m_matrix.array() / ( v_matrix.array().sqrt() + epsilon ) ).matrix();
         }
 
         if( vector_variable != nullptr )
         {
             // Update first moments
             m_vector = m_vector * beta1 + ( 1.0 - beta1 ) * ( *vector_gradient );
-
             // Update second moments
             v_vector = v_vector * beta2 + ( 1.0 - beta2 ) * vector_gradient->array().pow( 2 ).matrix();
-
-            // Bias corrected first moments
-            auto m_hat = m_vector / ( 1.0 - beta_1_t );
-
-            // Bias corrected second moments
-            auto v_hat = v_vector / ( 1.0 - beta_2_t );
-
-            *vector_variable -= alpha * ( m_hat.array() / ( v_hat.array().sqrt() + epsilon ) ).matrix();
+            *vector_variable -= alpha_t * ( m_vector.array() / ( v_vector.array().sqrt() + epsilon ) ).matrix();
         }
 
         timestep++;
