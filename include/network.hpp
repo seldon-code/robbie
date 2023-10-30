@@ -78,7 +78,7 @@ public:
         }
 
         fmt::print(
-            "Fitting with n_samples = {}, input_size = {}, batch_size = {}\n\n", n_samples, input_size, batch_size );
+            "Fitting with {} samples of batchsize {} ({} total)\n\n", n_samples, batch_size, n_samples * batch_size );
 
         auto t_fit_start = std::chrono::high_resolution_clock::now();
 
