@@ -69,7 +69,6 @@ public:
          scalar learning_rate, bool print_progress = false )
     {
         auto n_samples  = x_train.size();
-        auto input_size = x_train[0].rows();
         auto batch_size = x_train[0].cols();
 
         for( auto & l : layers )
