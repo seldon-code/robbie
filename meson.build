@@ -41,3 +41,16 @@ foreach e : examples
     include_directories :  ['examples' / e.get(0), incdir]
     )
 endforeach
+
+py = import('python').find_installation()
+python_dep = py.dependency()
+pyb11f = py.extension_module('robbielib',
+          sources : [
+            'bindings/binding.cpp'
+                    ],
+          dependencies : [dependency('fmt'),
+                          dependency('python3'),
+                          dependency('pybind11'),
+                         declare_dependency(link_args: '-lstdc++')],
+                         include_directories : [incdir, 'bindings'],
+          install : true)

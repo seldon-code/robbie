@@ -18,3 +18,4 @@ dependencies:
   - ninja 
   - clang-format
   - catch2 
+  - pybind11
