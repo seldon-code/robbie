@@ -41,16 +41,14 @@ public:
     // returns output for a given input
     Matrix<scalar> forward_propagation( const Matrix<scalar> & input_data ) override
     {
-        if( frozen_seed.has_value() )
-            [[unlikely]]
-            {
-                gen.seed( frozen_seed.value() );
-            }
+        if( frozen_seed.has_value() ) [[unlikely]]
+        {
+            gen.seed( frozen_seed.value() );
+        }
 
         dropout_mask.resize( input_data.rows(), 1 );
-        const auto dropout_lambda = [&]( [[maybe_unused]] scalar x ) {
-            return static_cast<scalar>( dist( gen ) > this->p_keep ? 0.0 : 1.0 / p_keep );
-        };
+        const auto dropout_lambda = [&]( [[maybe_unused]] scalar x )
+        { return static_cast<scalar>( dist( gen ) > this->p_keep ? 0.0 : 1.0 / p_keep ); };
         dropout_mask = dropout_mask.array().unaryExpr( dropout_lambda );
 
         this->output = input_data.array().colwise() * dropout_mask.array();
