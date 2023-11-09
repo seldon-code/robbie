@@ -1,3 +1,3 @@
-from robbielib import add
+import robbielib as robbie
 
-print(add(1,6))
+print(robbie.add(1,6))
