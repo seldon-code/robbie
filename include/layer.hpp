@@ -21,20 +21,9 @@ protected:
 public:
     Layer() = default;
     Layer( std::optional<size_t> input_size, std::optional<size_t> output_size )
-            : input_size( input_size ),
-              output_size( output_size ),
-              opt( std::make_unique<Optimizers::StochasticGradientDescent<scalar>>( 0.1 ) )
+            : input_size( input_size ), output_size( output_size )
     {
     }
-
-    std::unique_ptr<Optimizers::Optimizer<scalar>> opt;
-
-    // TODO: figure out how to implement copy constructor
-    // Layer( const Layer & l )
-    //         : input( l.input ), output( l.output ), input_size( l.input_size ), output_size( l.output_size )
-    // {
-    //     opt = std::make_unique<Optimizer<scalar>>( l.opt );
-    // }
 
     virtual std::string name() = 0;
 
@@ -60,8 +49,23 @@ public:
     // computes dE/dX for a given dE/dY (and update parameters if any)
     virtual Matrix<scalar> backward_propagation( const Matrix<scalar> & output_error ) = 0;
 
-    // Get trainable parameters
-    virtual size_t get_trainable_params() = 0;
+    // Get number of trainable parameters
+    virtual size_t get_trainable_params()
+    {
+        return 0;
+    };
+
+    // Get ref to trainable parameters
+    virtual std::vector<Eigen::Ref<Matrix<scalar>>> variables()
+    {
+        return {}; // Standard behaviour is to return an empty vector, i.e. no trainable params
+    };
+
+    // Get ref to gradients of parameters
+    virtual std::vector<Eigen::Ref<Matrix<scalar>>> gradients()
+    {
+        return {};
+    };
 
     virtual ~Layer() = default;
 };

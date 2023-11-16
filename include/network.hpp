@@ -22,6 +22,9 @@ class Network
 public:
     std::optional<scalar> loss_tol = std::nullopt;
 
+    std::unique_ptr<Optimizers::Optimizer<scalar>> opt
+        = std::make_unique<Optimizers::StochasticGradientDescent<scalar>>( 0.00001 );
+
     Network() = default;
 
     template<typename LayerT, typename... T>
@@ -64,17 +67,38 @@ public:
         return loss;
     }
 
+    // void set_optimizer( const Optimizers::Optimizer<scalar> & opt )
+    // {
+    //     this->opt = s
+    // }
+
+    void register_optimizer_variables()
+    {
+        this->opt->variables.clear();
+        this->opt->variables.clear();
+
+        for( auto & layer : layers )
+        {
+            for( auto & v : layer->variables() )
+            {
+                this->opt->variables.push_back( v );
+            }
+
+            for( auto & g : layer->gradients() )
+            {
+                this->opt->gradients.push_back( g );
+            }
+        }
+    }
+
     void
     fit( const std::vector<Matrix<scalar>> & x_train, const std::vector<Matrix<scalar>> & y_train, size_t epochs,
          scalar learning_rate, bool print_progress = false )
     {
+        register_optimizer_variables();
+
         auto n_samples  = x_train.size();
         auto batch_size = x_train[0].cols();
-
-        for( auto & l : layers )
-        {
-            l->opt = std::move( std::make_unique<Optimizers::StochasticGradientDescent<scalar>>( learning_rate ) );
-        }
 
         fmt::print(
             "Fitting with {} samples of batchsize {} ({} total)\n\n", n_samples, batch_size, n_samples * batch_size );
@@ -86,6 +110,7 @@ public:
         {
             auto t_epoch_start = std::chrono::high_resolution_clock::now();
             err                = 0;
+
             for( size_t j = 0; j < n_samples; j++ )
             {
                 // forward propagation
@@ -104,6 +129,8 @@ public:
                     auto & layer = layers[i_layer];
                     error        = layer->backward_propagation( error );
                 }
+
+                opt->optimize();
             }
 
             auto t_epoch_end = std::chrono::high_resolution_clock::now();
