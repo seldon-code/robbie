@@ -9,6 +9,7 @@
 #include <cstddef>
 #include <memory>
 #include <optional>
+#include <stdexcept>
 #include <type_traits>
 #include <vector>
 
@@ -21,9 +22,6 @@ class Network
 
 public:
     std::optional<scalar> loss_tol = std::nullopt;
-
-    std::unique_ptr<Optimizers::Optimizer<scalar>> opt
-        = std::make_unique<Optimizers::StochasticGradientDescent<scalar>>( 0.00001 );
 
     Network() = default;
 
@@ -67,10 +65,10 @@ public:
         return loss;
     }
 
-    // void set_optimizer( const Optimizers::Optimizer<scalar> & opt )
-    // {
-    //     this->opt = s
-    // }
+    void set_optimizer( Optimizers::Optimizer<scalar> * opt )
+    {
+        this->opt = opt;
+    }
 
     void register_optimizer_variables()
     {
@@ -93,8 +91,12 @@ public:
 
     void
     fit( const std::vector<Matrix<scalar>> & x_train, const std::vector<Matrix<scalar>> & y_train, size_t epochs,
-         scalar learning_rate, bool print_progress = false )
+         bool print_progress = false )
     {
+
+        if( this->opt == nullptr )
+            throw std::runtime_error( "Optimizer has not been set!" );
+
         register_optimizer_variables();
 
         auto n_samples  = x_train.size();
@@ -194,6 +196,7 @@ public:
 
 private:
     std::vector<std::unique_ptr<Layer<scalar>>> layers;
+    Optimizers::Optimizer<scalar> * opt = nullptr;
 };
 
 } // namespace Robbie

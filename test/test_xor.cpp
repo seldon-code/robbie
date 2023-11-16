@@ -21,7 +21,10 @@ TEST_CASE( "Test_XOR" )
     y_train[2] << 1;
     y_train[3] << 0;
 
-    auto network     = Network<double, LossFunctions::MeanSquareError>();
+    auto opt     = Optimizers::StochasticGradientDescent<double>( 0.01 );
+    auto network = Network<double, LossFunctions::MeanSquareError>();
+    network.set_optimizer( &opt );
+
     network.loss_tol = 5e-4;
 
     network.add<FCLayer<double>>( 2, 10 );
@@ -29,7 +32,7 @@ TEST_CASE( "Test_XOR" )
     network.add<FCLayer<double>>( 10, 1 );
     network.add<ActivationLayer<double, ActivationFunctions::Tanh>>();
 
-    network.fit( x_train, y_train, 50000, 0.01 );
+    network.fit( x_train, y_train, 50000 );
 
     auto out = network.predict( x_train );
 

@@ -7,3 +7,4 @@
 #include "layer.hpp"
 #include "loss_functions.hpp"
 #include "network.hpp"
+#include "optimizers.hpp"
