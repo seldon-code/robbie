@@ -43,13 +43,16 @@ public:
     template<typename Derived, typename Derived2>
     static auto f( const Eigen::MatrixBase<Derived> & y_true, const Eigen::MatrixBase<Derived2> & y_pred )
     {
-        return -( y_true.array() * y_pred.array().log() ).colwise().sum();
+        constexpr typename Derived::Scalar epsilon = 1e-12;
+        return -( y_true.array() * ( y_pred.array() + epsilon ).log2() ).colwise().sum();
     }
 
     template<typename Derived, typename Derived2>
     static auto df( const Eigen::MatrixBase<Derived> & y_true, const Eigen::MatrixBase<Derived2> & y_pred )
     {
-        return -( y_true.array() * y_pred.array().pow( -1 ) ).matrix();
+        constexpr typename Derived::Scalar log2e   = 1.44269504089;
+        constexpr typename Derived::Scalar epsilon = 1e-12;
+        return -( y_true.array() * ( y_pred.array() + epsilon ).pow( -1 ) ).matrix() * log2e;
     }
 };
 

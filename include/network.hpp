@@ -69,7 +69,6 @@ public:
          scalar learning_rate, bool print_progress = false )
     {
         auto n_samples  = x_train.size();
-        auto input_size = x_train[0].rows();
         auto batch_size = x_train[0].cols();
 
         for( auto & l : layers )
@@ -78,7 +77,7 @@ public:
         }
 
         fmt::print(
-            "Fitting with n_samples = {}, input_size = {}, batch_size = {}\n\n", n_samples, input_size, batch_size );
+            "Fitting with {} samples of batchsize {} ({} total)\n\n", n_samples, batch_size, n_samples * batch_size );
 
         auto t_fit_start = std::chrono::high_resolution_clock::now();
 
