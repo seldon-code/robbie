@@ -3,6 +3,7 @@
 #include <fmt/ostream.h>
 #include <cstddef>
 #include <optional>
+#include <stdexcept>
 #include <vector>
 
 namespace Robbie::Optimizers
@@ -26,6 +27,10 @@ public:
 
     virtual void register_variable( Eigen::Ref<Robbie::Matrix<scalar>> var, Eigen::Ref<Robbie::Matrix<scalar>> grad )
     {
+        if( !( ( var.rows() == grad.rows() ) && ( var.cols() == grad.cols() ) ) )
+        {
+            throw std::runtime_error( "Tried to use variable and gradient of different shapes!" );
+        }
         variables.push_back( var );
         gradients.push_back( grad );
     };
@@ -65,78 +70,57 @@ template<typename scalar>
 class Adam : public Optimizer<scalar>
 {
 
-    // private:
-    //     scalar alpha   = 0.001;
-    //     scalar beta1   = 0.9;
-    //     scalar beta2   = 0.999;
-    //     scalar epsilon = 1e-8;
+private:
+    scalar alpha   = 0.001;
+    scalar beta1   = 0.9;
+    scalar beta2   = 0.999;
+    scalar epsilon = 1e-8;
 
-    //     // first moments
-    //     Matrix<scalar> m_matrix;
-    //     Vector<scalar> m_vector;
+    // first moments
+    std::vector<Matrix<scalar>> m_matrix;
+    // second moments
+    std::vector<Matrix<scalar>> v_matrix;
+    size_t timestep = 0;
 
-    //     // second moments
-    //     Matrix<scalar> v_matrix;
-    //     Vector<scalar> v_vector;
+public:
+    void register_variable( Eigen::Ref<Robbie::Matrix<scalar>> var, Eigen::Ref<Robbie::Matrix<scalar>> grad ) override
+    {
+        Optimizer<scalar>::register_variable( var, grad );
+        m_matrix.push_back( Matrix<scalar>::Zero( var.rows(), var.cols() ) );
+        v_matrix.push_back( Matrix<scalar>::Zero( var.rows(), var.cols() ) );
+    }
 
-    //     size_t timestep = 0;
+    void clear() override
+    {
+        Optimizer<scalar>::clear();
+        m_matrix.clear();
+        v_matrix.clear();
+        timestep = 0;
+    }
 
-    //     void initialize( Matrix<scalar> * matrix_variable, Vector<scalar> * vector_variable )
-    //     {
-    //         if( matrix_variable != nullptr )
-    //         {
-    //             m_matrix = Matrix<scalar>::Zero( matrix_variable->rows(), matrix_variable->cols() );
-    //             v_matrix = Matrix<scalar>::Zero( matrix_variable->rows(), matrix_variable->cols() );
-    //         }
+    Adam() = default;
+    Adam( scalar alpha ) : alpha( alpha ) {}
+    Adam( scalar alpha, scalar beta1, scalar beta2, scalar epsilon )
+            : alpha( alpha ), beta1( beta1 ), beta2( beta2 ), epsilon( epsilon )
+    {
+    }
 
-    //         if( vector_variable != nullptr )
-    //         {
-    //             m_vector = Vector<scalar>::Zero( vector_variable->size() );
-    //             v_vector = Vector<scalar>::Zero( vector_variable->size() );
-    //         }
-    //     }
+    void optimize() override
+    {
+        scalar beta_1_t = std::pow( beta1, timestep + 1 );
+        scalar beta_2_t = std::pow( beta2, timestep + 1 );
+        scalar alpha_t  = alpha * std::sqrt( 1.0 - beta_2_t ) / ( 1.0 - beta_1_t );
 
-    // public:
-    //     Adam() = default;
-    //     Adam( scalar alpha ) : alpha( alpha ) {}
-    //     Adam( scalar alpha, scalar beta1, scalar beta2, scalar epsilon )
-    //             : alpha( alpha ), beta1( beta1 ), beta2( beta2 ), epsilon( epsilon )
-    //     {
-    //     }
-
-    //     void optimize(
-    //         Matrix<scalar> * matrix_variable, Matrix<scalar> * matrix_gradient, Vector<scalar> * vector_variable,
-    //         Vector<scalar> * vector_gradient ) override
-    //     {
-    //         if( timestep == 0 )
-    //         {
-    //             initialize( matrix_variable, vector_variable );
-    //         }
-
-    //         scalar beta_1_t = std::pow( beta1, timestep + 1 );
-    //         scalar beta_2_t = std::pow( beta2, timestep + 1 );
-    //         scalar alpha_t  = alpha * std::sqrt( 1.0 - beta_2_t ) / ( 1.0 - beta_1_t );
-
-    //         if( matrix_variable != nullptr )
-    //         {
-    //             // Update first moments
-    //             m_matrix = m_matrix * beta1 + ( 1.0 - beta1 ) * ( *matrix_gradient );
-    //             // Update second moments
-    //             v_matrix = v_matrix * beta2 + ( 1.0 - beta2 ) * matrix_gradient->array().pow( 2 ).matrix();
-    //             *matrix_variable -= alpha_t * ( m_matrix.array() / ( v_matrix.array().sqrt() + epsilon ) ).matrix();
-    //         }
-
-    //         if( vector_variable != nullptr )
-    //         {
-    //             // Update first moments
-    //             m_vector = m_vector * beta1 + ( 1.0 - beta1 ) * ( *vector_gradient );
-    //             // Update second moments
-    //             v_vector = v_vector * beta2 + ( 1.0 - beta2 ) * vector_gradient->array().pow( 2 ).matrix();
-    //             *vector_variable -= alpha_t * ( m_vector.array() / ( v_vector.array().sqrt() + epsilon ) ).matrix();
-    //         }
-
-    //         timestep++;
-    //     }
+        for( size_t iv = 0; iv < this->variables.size(); iv++ )
+        {
+            // Update first moments
+            m_matrix[iv] = m_matrix[iv] * beta1 + ( 1.0 - beta1 ) * ( this->gradients[iv] );
+            // Update second moments
+            v_matrix[iv] = v_matrix[iv] * beta2 + ( 1.0 - beta2 ) * this->gradients[iv].array().pow( 2 ).matrix();
+            this->variables[iv]
+                -= alpha_t * ( m_matrix[iv].array() / ( v_matrix[iv].array().sqrt() + epsilon ) ).matrix();
+        }
+    }
 };
 
 } // namespace Robbie::Optimizers
