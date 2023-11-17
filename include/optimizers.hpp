@@ -11,13 +11,26 @@ namespace Robbie::Optimizers
 template<typename scalar>
 class Optimizer
 {
-public:
-    Optimizer()          = default;
-    virtual ~Optimizer() = default;
-
+protected:
     std::vector<Eigen::Ref<Robbie::Matrix<scalar>>> variables;
     std::vector<Eigen::Ref<Robbie::Matrix<scalar>>> gradients;
 
+public:
+    Optimizer() = default;
+
+    virtual void clear()
+    {
+        variables.clear();
+        gradients.clear();
+    }
+
+    virtual void register_variable( Eigen::Ref<Robbie::Matrix<scalar>> var, Eigen::Ref<Robbie::Matrix<scalar>> grad )
+    {
+        variables.push_back( var );
+        gradients.push_back( grad );
+    };
+
+    virtual ~Optimizer()    = default;
     virtual void optimize() = 0;
 };
 

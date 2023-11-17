@@ -72,19 +72,16 @@ public:
 
     void register_optimizer_variables()
     {
-        this->opt->variables.clear();
-        this->opt->variables.clear();
+        this->opt->clear();
 
         for( auto & layer : layers )
         {
-            for( auto & v : layer->variables() )
+            for( size_t iv = 0; iv < layer->variables().size(); iv++ )
             {
-                this->opt->variables.push_back( v );
-            }
+                auto v = layer->variables()[iv];
+                auto g = layer->gradients()[iv];
 
-            for( auto & g : layer->gradients() )
-            {
-                this->opt->gradients.push_back( g );
+                this->opt->register_variable( v, g );
             }
         }
     }
