@@ -14,10 +14,6 @@
 template<typename scalar>
 void test_backward_propagation( Robbie::Layer<scalar> * layer, const Robbie::Matrix<scalar> & x0, size_t output_size )
 {
-    // Use the DoNothing optimizer
-    // Otherwise the weights will change on the backward propagation and we cannot compare to subsequent forward optimizations
-    layer->opt = std::move( std::make_unique<Robbie::Optimizers::DoNothing<scalar>>() );
-
     // The loss function is the sum of outputs E = y1 + ... + yN
     auto loss0 = layer->forward_propagation( x0 ).colwise().sum().eval();
 

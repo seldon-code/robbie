@@ -67,7 +67,10 @@ int main()
     // No. of trainable params
     network.summary();
     network.loss_tol = 2e-2;
-    network.fit( x_train, y_train, 1000, 0.01, true );
+
+    auto opt = Robbie::Optimizers::StochasticGradientDescent( 0.01 );
+    network.set_optimizer( &opt );
+    network.fit( x_train, y_train, 1000, true );
 
     fmt::print( "Loss on test set = {:.3e}\n", network.loss( x_test, y_test ) );
 

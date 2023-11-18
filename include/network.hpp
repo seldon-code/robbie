@@ -9,6 +9,7 @@
 #include <cstddef>
 #include <memory>
 #include <optional>
+#include <stdexcept>
 #include <type_traits>
 #include <vector>
 
@@ -64,17 +65,39 @@ public:
         return loss;
     }
 
+    void set_optimizer( Optimizers::Optimizer<scalar> * opt )
+    {
+        this->opt = opt;
+    }
+
+    void register_optimizer_variables()
+    {
+        this->opt->clear();
+
+        for( auto & layer : layers )
+        {
+            for( size_t iv = 0; iv < layer->variables().size(); iv++ )
+            {
+                auto v = layer->variables()[iv];
+                auto g = layer->gradients()[iv];
+
+                this->opt->register_variable( v, g );
+            }
+        }
+    }
+
     void
     fit( const std::vector<Matrix<scalar>> & x_train, const std::vector<Matrix<scalar>> & y_train, size_t epochs,
-         scalar learning_rate, bool print_progress = false )
+         bool print_progress = false )
     {
+
+        if( this->opt == nullptr )
+            throw std::runtime_error( "Optimizer has not been set!" );
+
+        register_optimizer_variables();
+
         auto n_samples  = x_train.size();
         auto batch_size = x_train[0].cols();
-
-        for( auto & l : layers )
-        {
-            l->opt = std::move( std::make_unique<Optimizers::StochasticGradientDescent<scalar>>( learning_rate ) );
-        }
 
         fmt::print(
             "Fitting with {} samples of batchsize {} ({} total)\n\n", n_samples, batch_size, n_samples * batch_size );
@@ -86,6 +109,7 @@ public:
         {
             auto t_epoch_start = std::chrono::high_resolution_clock::now();
             err                = 0;
+
             for( size_t j = 0; j < n_samples; j++ )
             {
                 // forward propagation
@@ -104,6 +128,8 @@ public:
                     auto & layer = layers[i_layer];
                     error        = layer->backward_propagation( error );
                 }
+
+                opt->optimize();
             }
 
             auto t_epoch_end = std::chrono::high_resolution_clock::now();
@@ -167,6 +193,7 @@ public:
 
 private:
     std::vector<std::unique_ptr<Layer<scalar>>> layers;
+    Optimizers::Optimizer<scalar> * opt = nullptr;
 };
 
 } // namespace Robbie

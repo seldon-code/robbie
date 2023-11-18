@@ -1,7 +1,10 @@
 #pragma once
 #include "defines.hpp"
 #include <fmt/ostream.h>
+#include <cstddef>
 #include <optional>
+#include <stdexcept>
+#include <vector>
 
 namespace Robbie::Optimizers
 {
@@ -9,14 +12,31 @@ namespace Robbie::Optimizers
 template<typename scalar>
 class Optimizer
 {
-public:
-    Optimizer()          = default;
-    virtual ~Optimizer() = default;
+protected:
+    std::vector<Eigen::Ref<Robbie::Matrix<scalar>>> variables;
+    std::vector<Eigen::Ref<Robbie::Matrix<scalar>>> gradients;
 
-    virtual void optimize(
-        Matrix<scalar> * matrix_variable, Matrix<scalar> * matrix_gradient, Vector<scalar> * vector_variable,
-        Vector<scalar> * vector_gradient )
-        = 0;
+public:
+    Optimizer() = default;
+
+    virtual void clear()
+    {
+        variables.clear();
+        gradients.clear();
+    }
+
+    virtual void register_variable( Eigen::Ref<Robbie::Matrix<scalar>> var, Eigen::Ref<Robbie::Matrix<scalar>> grad )
+    {
+        if( !( ( var.rows() == grad.rows() ) && ( var.cols() == grad.cols() ) ) )
+        {
+            throw std::runtime_error( "Tried to use variable and gradient of different shapes!" );
+        }
+        variables.push_back( var );
+        gradients.push_back( grad );
+    };
+
+    virtual ~Optimizer()    = default;
+    virtual void optimize() = 0;
 };
 
 template<typename scalar>
@@ -24,10 +44,7 @@ class DoNothing : public Optimizer<scalar>
 {
 public:
     DoNothing() = default;
-
-    virtual void optimize(
-        [[maybe_unused]] Matrix<scalar> * matrix_variable, [[maybe_unused]] Matrix<scalar> * matrix_gradient,
-        [[maybe_unused]] Vector<scalar> * vector_variable, [[maybe_unused]] Vector<scalar> * vector_gradient ){};
+    virtual void optimize(){};
 };
 
 template<typename scalar>
@@ -40,18 +57,11 @@ private:
 public:
     StochasticGradientDescent( scalar learning_rate ) : learning_rate( learning_rate ) {}
 
-    void optimize(
-        Matrix<scalar> * matrix_variable, Matrix<scalar> * matrix_gradient, Vector<scalar> * vector_variable,
-        Vector<scalar> * vector_gradient ) override
+    void optimize() override
     {
-        if( matrix_variable != nullptr )
+        for( size_t iv = 0; iv < this->variables.size(); iv++ )
         {
-            *( matrix_variable ) -= learning_rate * ( *matrix_gradient );
-        }
-
-        if( vector_variable != nullptr )
-        {
-            *( vector_variable ) -= learning_rate * ( *vector_gradient );
+            this->variables[iv] -= learning_rate * this->gradients[iv];
         }
     }
 };
@@ -67,31 +77,27 @@ private:
     scalar epsilon = 1e-8;
 
     // first moments
-    Matrix<scalar> m_matrix;
-    Vector<scalar> m_vector;
-
+    std::vector<Matrix<scalar>> m_matrix;
     // second moments
-    Matrix<scalar> v_matrix;
-    Vector<scalar> v_vector;
-
+    std::vector<Matrix<scalar>> v_matrix;
     size_t timestep = 0;
 
-    void initialize( Matrix<scalar> * matrix_variable, Vector<scalar> * vector_variable )
+public:
+    void register_variable( Eigen::Ref<Robbie::Matrix<scalar>> var, Eigen::Ref<Robbie::Matrix<scalar>> grad ) override
     {
-        if( matrix_variable != nullptr )
-        {
-            m_matrix = Matrix<scalar>::Zero( matrix_variable->rows(), matrix_variable->cols() );
-            v_matrix = Matrix<scalar>::Zero( matrix_variable->rows(), matrix_variable->cols() );
-        }
-
-        if( vector_variable != nullptr )
-        {
-            m_vector = Vector<scalar>::Zero( vector_variable->size() );
-            v_vector = Vector<scalar>::Zero( vector_variable->size() );
-        }
+        Optimizer<scalar>::register_variable( var, grad );
+        m_matrix.push_back( Matrix<scalar>::Zero( var.rows(), var.cols() ) );
+        v_matrix.push_back( Matrix<scalar>::Zero( var.rows(), var.cols() ) );
     }
 
-public:
+    void clear() override
+    {
+        Optimizer<scalar>::clear();
+        m_matrix.clear();
+        v_matrix.clear();
+        timestep = 0;
+    }
+
     Adam() = default;
     Adam( scalar alpha ) : alpha( alpha ) {}
     Adam( scalar alpha, scalar beta1, scalar beta2, scalar epsilon )
@@ -99,38 +105,21 @@ public:
     {
     }
 
-    void optimize(
-        Matrix<scalar> * matrix_variable, Matrix<scalar> * matrix_gradient, Vector<scalar> * vector_variable,
-        Vector<scalar> * vector_gradient ) override
+    void optimize() override
     {
-        if( timestep == 0 )
-        {
-            initialize( matrix_variable, vector_variable );
-        }
-
         scalar beta_1_t = std::pow( beta1, timestep + 1 );
         scalar beta_2_t = std::pow( beta2, timestep + 1 );
         scalar alpha_t  = alpha * std::sqrt( 1.0 - beta_2_t ) / ( 1.0 - beta_1_t );
 
-        if( matrix_variable != nullptr )
+        for( size_t iv = 0; iv < this->variables.size(); iv++ )
         {
             // Update first moments
-            m_matrix = m_matrix * beta1 + ( 1.0 - beta1 ) * ( *matrix_gradient );
+            m_matrix[iv] = m_matrix[iv] * beta1 + ( 1.0 - beta1 ) * ( this->gradients[iv] );
             // Update second moments
-            v_matrix = v_matrix * beta2 + ( 1.0 - beta2 ) * matrix_gradient->array().pow( 2 ).matrix();
-            *matrix_variable -= alpha_t * ( m_matrix.array() / ( v_matrix.array().sqrt() + epsilon ) ).matrix();
+            v_matrix[iv] = v_matrix[iv] * beta2 + ( 1.0 - beta2 ) * this->gradients[iv].array().pow( 2 ).matrix();
+            this->variables[iv]
+                -= alpha_t * ( m_matrix[iv].array() / ( v_matrix[iv].array().sqrt() + epsilon ) ).matrix();
         }
-
-        if( vector_variable != nullptr )
-        {
-            // Update first moments
-            m_vector = m_vector * beta1 + ( 1.0 - beta1 ) * ( *vector_gradient );
-            // Update second moments
-            v_vector = v_vector * beta2 + ( 1.0 - beta2 ) * vector_gradient->array().pow( 2 ).matrix();
-            *vector_variable -= alpha_t * ( m_vector.array() / ( v_vector.array().sqrt() + epsilon ) ).matrix();
-        }
-
-        timestep++;
     }
 };
 
